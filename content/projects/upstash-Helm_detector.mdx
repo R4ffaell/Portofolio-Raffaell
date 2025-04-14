@@ -1,0 +1,41 @@
+---
+title: Helmet Detection System with YOLOv5
+description: A computer vision system to detect helmet usage, rider presence, and number plates using YOLOv5.
+date: "2025-04-12"
+
+published: true
+url: https://www.kaggle.com/datasets/aneesarom/rider-with-helmet-without-helmet-number-plate
+---
+
+Helmet Detection System is an AI-powered object detection model using YOLOv5 to enhance road safety monitoring for motorcyclists.
+
+- Detects multiple classes: helmet, no helmet, rider, motorcycle, number plate.
+- Real-time inference ready, perfect for edge devices and city surveillance.
+- Open dataset and fully reproducible pipeline.
+- Custom training-ready with PyTorch and YOLOv5.
+
+Formally, this project is a motorcycle safety compliance detection system. Informally, it's a smart traffic enforcer that never sleeps.
+
+We’ve seen countless violations of safety standards in traffic—riders without helmets, passengers unaccounted for, number plates obscured. This system brings clarity to chaos using computer vision. Most safety monitoring is manual, costly, or reactive. This solution is:
+
+- Lightweight and can run on edge devices like Jetson Nano or Raspberry Pi.
+- Trained on real-world data of motorcyclists with and without helmets.
+- Easy to integrate into city surveillance systems or campus gate automation.
+- Free and open-source with transparent evaluation metrics.
+
+Let’s look at a real-world use case. Imagine a smart traffic camera at a university entrance. It captures incoming motorcyclists, runs detection, and flags those not wearing helmets. The system sends alerts to a connected dashboard or mobile notification system. There’s no need for constant human supervision.
+
+The model is trained using YOLOv5 with a custom dataset from Kaggle. It outputs bounding boxes for:
+
+- 🪖 Helmet
+- ❌ No Helmet
+- 🧍 Rider
+- 🛵 Motorcycle with helmet
+- 🚫 Motorcycle without helmet
+- 🔢 Number Plate
+
+Training command:
+
+```bash
+!python train.py --img 640 --batch 16 --epochs 100 --data data.yaml --weights yolov5s.pt --name helmet_detection
+```

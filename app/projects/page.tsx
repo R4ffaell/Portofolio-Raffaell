@@ -20,9 +20,9 @@ export default async function ProjectsPage() {
     return acc;
   }, {} as Record<string, number>);
 
-  const featured = allProjects.find((project) => project.slug === "unkey")!;
-  const top2 = allProjects.find((project) => project.slug === "planetfall")!;
-  const top3 = allProjects.find((project) => project.slug === "highstorm")!;
+  const featured = allProjects.find((project) => project.slug === "Driver-Monitoring")!;
+  const top2 = allProjects.find((project) => project.slug === "Healthylicious")!;
+  const top3 = allProjects.find((project) => project.slug === "IT-Jobs")!;
   const sorted = allProjects
     .filter((p) => p.published)
     .filter(
@@ -94,7 +94,9 @@ export default async function ProjectsPage() {
           </Card>
 
           <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0 ">
-            {[top2, top3].map((project) => (
+            {[top2, top3]
+            .filter(Boolean)
+            .map((project) => (
               <Card key={project.slug}>
                 <Article project={project} views={views[project.slug] ?? 0} />
               </Card>
