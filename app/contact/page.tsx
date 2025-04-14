@@ -37,7 +37,7 @@ export default function ContactPage() {
   const [copied, setCopied] = useState(false);
   const [emailHovered, setEmailHovered] = useState(false);
 
-  const handleCopy = (e, text) => {
+  const handleCopy = (e: React.MouseEvent<HTMLButtonElement>, text: string) => {
     e.preventDefault();
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -51,7 +51,7 @@ export default function ContactPage() {
         <div className="grid w-full grid-cols-1 gap-8 mx-auto mt-32 sm:mt-0 sm:grid-cols-3 lg:gap-16">
           {socials.map((social, i) => {
             const isEmail = social.label === "Email";
-            
+
             return (
               <motion.div
                 key={i}
@@ -62,17 +62,14 @@ export default function ContactPage() {
               >
                 <Card className="relative bg-white/5 backdrop-blur-md hover:shadow-xl hover:border-zinc-400 border border-zinc-700 group transition duration-300 group-hover:ring-2 group-hover:ring-orange-500/40">
                   <div className="p-6 flex flex-col items-center justify-center relative">
-                    {/* Icon */}
                     <span className="relative flex items-center justify-center w-12 h-12 text-sm border rounded-full text-zinc-200 group-hover:text-white group-hover:bg-zinc-900 border-zinc-500 bg-zinc-900 group-hover:border-zinc-200 drop-shadow-orange">
                       {social.icon}
                     </span>
 
-                    {/* Label */}
                     <span className="mt-2 text-sm text-zinc-400 group-hover:text-zinc-200">
                       {social.label}
                     </span>
 
-                    {/* Handle with special treatment for email */}
                     {isEmail ? (
                       <div className="text-lg font-medium text-zinc-200 group-hover:text-white font-display mt-4 mb-4 text-center">
                         {emailHovered ? (
@@ -90,8 +87,7 @@ export default function ContactPage() {
                         {social.handle}
                       </span>
                     )}
-                    
-                    {/* Primary Action Button */}
+
                     <Link
                       href={social.href}
                       target={!isEmail ? "_blank" : "_self"}
@@ -100,8 +96,7 @@ export default function ContactPage() {
                       {social.buttonIcon}
                       {social.buttonText}
                     </Link>
-                    
-                    {/* Copy Button with Tooltip (Only for Email) */}
+
                     {isEmail && (
                       <div className="relative">
                         <motion.div
