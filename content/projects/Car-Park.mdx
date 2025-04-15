@@ -1,0 +1,145 @@
+---
+title: CarParkFinder - Real Time Parking Space Detection
+description: CarParkFinder is a YOLOv8-based system that detects available and occupied parking spots in real-time. Designed for smart city parking solutions.
+date: "2025-04-15"
+url: https://github.com/R4ffaell/Parking-Space-Detection
+published: true
+repository: R4ffaell/Parking-Space-Detection
+featured: true
+---
+
+# 🚗 CarParkFinder – Real-Time Parking Space Detection with YOLOv8
+
+**CarParkFinder** is a real-time parking space detection system utilizing **YOLOv8** for detecting available and occupied parking spots. This system optimizes parking lot management and is perfect for smart cities 🌆. Built on computer vision principles, the system leverages state-of-the-art detection algorithms to identify parking spaces using a dataset trained via Roboflow. With a high mAP score of **97.7%** 🎯, CarParkFinder ensures accurate and reliable detection.
+
+![Detection Result](https://github.com/R4ffaell/Parking-Space-Detection/blob/main/Car%20Detection%202.png?raw=true)
+
+---
+
+## 🧠 Features
+
+- 🚘 **Real-time parking detection** for available and occupied spots.
+- 🎯 **High accuracy** with mAP@0.5: 97.7%.
+- ⚡ Powered by **YOLOv8** for efficient object detection.
+- 🏩 Compatible with **smart parking management systems** for cities and large facilities.
+- 📦 Dataset sourced from **Roboflow**, specifically trained for parking space detection.
+
+## 🖼️ Example Detection Results
+
+Here’s a sample output from the model after detecting parking spaces:
+
+![Detection Result](https://github.com/R4ffaell/Parking-Space-Detection/blob/main/Car%20detection.png?raw=true)
+
+---
+
+## 📦 Tech Stack
+
+- 🐍 **Python 3.11** for application logic.
+- 🤬 **YOLOv8** for real-time object detection.
+- 📸 **OpenCV** for image and video processing.
+- 🧠 **Roboflow** for dataset generation and model training.
+- 📊 **Matplotlib** for result visualization.
+- 📈 **Scikit-learn** for performance evaluation.
+
+---
+
+## 🛠️ Installation & Usage
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/carparkfinder.git
+cd carparkfinder
+```
+
+---
+
+### 2️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 3️⃣ Download Dataset from Roboflow
+
+```python
+from roboflow import Roboflow
+
+rf = Roboflow(api_key="YOUR_API_KEY")
+project = rf.workspace("ujang").project("parking-space-ipm1b-dic5s")
+dataset = project.version(1).download("yolov8")
+```
+
+---
+
+### 4️⃣ Train the Model
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.pt")  # You can also use yolov8s.pt, yolov8m.pt, etc.
+
+model.train(
+    data="/content/Parking-Space-1/data.yaml",
+    epochs=50,
+    imgsz=640
+)
+```
+
+---
+
+### 5️⃣ Run Prediction & Visualize Results
+
+```python
+model = YOLO("runs/detect/train/weights/best.pt")
+model.predict("/content/Parking-Space-1/valid/images", save=True)
+```
+
+---
+
+### 6️⃣ Visualize Sample Prediction
+
+```python
+import os, cv2
+import matplotlib.pyplot as plt
+
+result_path = "runs/detect/predict"
+image_files = sorted([f for f in os.listdir(result_path) if f.endswith('.jpg')])
+
+plt.figure(figsize=(15, 10))
+for i in range(5):
+    img = cv2.imread(os.path.join(result_path, image_files[i]))
+    plt.subplot(1, 5, i + 1)
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    plt.axis("off")
+plt.show()
+```
+
+---
+
+## 📊 Model Performance
+
+| Metric       | Score |
+| ------------ | ----- |
+| Precision    | 0.947 |
+| Recall       | 0.940 |
+| mAP@0.5      | 0.977 |
+| mAP@0.5:0.95 | 0.886 |
+
+---
+
+## 🚀 Deploy the Model
+
+You can integrate this model into a smart city parking system 🏩.  
+Deploy locally for single parking lot management, or scale it to cloud-based solutions ☁️ for larger multi-lot facilities.
+
+---
+
+## 🙌 Acknowledgements
+
+- 🚀 **Ultralytics** for the YOLOv8 framework.
+- 📓 **Roboflow** for providing the parking space dataset.
+
+---

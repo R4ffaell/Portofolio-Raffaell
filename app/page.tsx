@@ -36,8 +36,8 @@ const technologies = {
 const featuredProject = {
   title: "Driver Monitoring System",
   description:
-    "Real-time facial analysis to detect driver drowsiness and distraction using computer vision.",
-  image: "/images/driver-monitoring.jpg", // Add this image to your public folder
+    "Real-time facial analysis to detect driver drowsiness, distraction, yawn using computer vision.",
+  image: "/images/Distracted.png", // ✅ tanpa "public/"
   github: "https://github.com/R4ffaell/driver-monitoring",
   demo: "https://driver-monitoring-demo.vercel.app",
 };
@@ -116,13 +116,17 @@ export default function Home() {
           : "bg-gradient-to-tl from-sky-50 via-blue-50/20 to-indigo-50 text-blue-950"
       } ${themeChanging ? "scale-[0.98] blur-sm" : "scale-100 blur-0"}`}
     >
-      <div 
+      <div
         className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-700 ${
           themeChanging ? "opacity-100" : "opacity-0"
         } ${darkMode ? "bg-sky-100" : "bg-black"}`}
       >
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className={`transition-transform duration-700 ${themeChanging ? "scale-150 opacity-100" : "scale-0 opacity-0"}`}>
+          <div
+            className={`transition-transform duration-700 ${
+              themeChanging ? "scale-150 opacity-100" : "scale-0 opacity-0"
+            }`}
+          >
             {darkMode ? (
               <Sun size={64} className="text-amber-500 animate-spin-slow" />
             ) : (
@@ -194,11 +198,28 @@ export default function Home() {
                 }
                 disabled={themeChanging}
               >
-                <span className={`absolute inset-0 ${darkMode ? "bg-zinc-600" : "bg-blue-200"} opacity-0 transition-opacity duration-300 ${themeChanging ? "opacity-20" : ""}`}></span>
-                {darkMode ? 
-                  <Sun size={18} className={`transition-all duration-300 ${themeChanging ? "rotate-90" : "rotate-0"}`} /> : 
-                  <Moon size={18} className={`transition-all duration-300 ${themeChanging ? "-rotate-90" : "rotate-0"}`} />
-                }
+                <span
+                  className={`absolute inset-0 ${
+                    darkMode ? "bg-zinc-600" : "bg-blue-200"
+                  } opacity-0 transition-opacity duration-300 ${
+                    themeChanging ? "opacity-20" : ""
+                  }`}
+                ></span>
+                {darkMode ? (
+                  <Sun
+                    size={18}
+                    className={`transition-all duration-300 ${
+                      themeChanging ? "rotate-90" : "rotate-0"
+                    }`}
+                  />
+                ) : (
+                  <Moon
+                    size={18}
+                    className={`transition-all duration-300 ${
+                      themeChanging ? "-rotate-90" : "rotate-0"
+                    }`}
+                  />
+                )}
               </button>
             </li>
           </ul>
@@ -342,15 +363,13 @@ export default function Home() {
             } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm transition-all duration-500`}
           >
             <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
-              {/* Placeholder for project image */}
-              <div className="text-sm text-center p-4">
-                Project Screenshot
-                <br />
-                <span className="text-xs opacity-70">
-                  (Add image to public folder)
-                </span>
-              </div>
+              <img
+                src="/images/Distracted.png"
+                alt="Driver Monitoring Screenshot"
+                className="object-cover w-full h-full"
+              />
             </div>
+
             <div className="flex-1 flex flex-col">
               <h4
                 className={`text-lg font-medium ${
@@ -486,7 +505,7 @@ export default function Home() {
             animation: none;
           }
         }
-        
+
         /* Light mode animations */
         .light-rays {
           position: absolute;
@@ -503,21 +522,39 @@ export default function Home() {
           transform: scale(${darkMode ? 0 : 1});
           transition: opacity 1s ease, transform 1.5s ease;
         }
-        
+
         @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0); }
-          25% { transform: translateY(-15px) rotate(5deg); }
-          50% { transform: translateY(0) rotate(0); }
-          75% { transform: translateY(15px) rotate(-5deg); }
+          0%,
+          100% {
+            transform: translateY(0) rotate(0);
+          }
+          25% {
+            transform: translateY(-15px) rotate(5deg);
+          }
+          50% {
+            transform: translateY(0) rotate(0);
+          }
+          75% {
+            transform: translateY(15px) rotate(-5deg);
+          }
         }
-        
+
         @keyframes float-reverse {
-          0%, 100% { transform: translateY(0) rotate(0); }
-          25% { transform: translateY(15px) rotate(-5deg); }
-          50% { transform: translateY(0) rotate(0); }
-          75% { transform: translateY(-15px) rotate(5deg); }
+          0%,
+          100% {
+            transform: translateY(0) rotate(0);
+          }
+          25% {
+            transform: translateY(15px) rotate(-5deg);
+          }
+          50% {
+            transform: translateY(0) rotate(0);
+          }
+          75% {
+            transform: translateY(-15px) rotate(5deg);
+          }
         }
-        
+
         .floating-shapes {
           position: absolute;
           top: 0;
@@ -528,16 +565,20 @@ export default function Home() {
           opacity: ${darkMode ? 0 : 0.7};
           transition: opacity 1s ease;
         }
-        
+
         .floating-shapes::before,
         .floating-shapes::after {
-          content: '';
+          content: "";
           position: absolute;
           border-radius: 50%;
-          background: linear-gradient(135deg, rgba(147, 197, 253, 0.3), rgba(191, 219, 254, 0.1));
+          background: linear-gradient(
+            135deg,
+            rgba(147, 197, 253, 0.3),
+            rgba(191, 219, 254, 0.1)
+          );
           filter: blur(20px);
         }
-        
+
         .floating-shapes::before {
           top: 15%;
           left: 10%;
@@ -545,7 +586,7 @@ export default function Home() {
           height: 300px;
           animation: float 20s ease-in-out infinite;
         }
-        
+
         .floating-shapes::after {
           bottom: 15%;
           right: 10%;
@@ -553,12 +594,16 @@ export default function Home() {
           height: 250px;
           animation: float-reverse 25s ease-in-out infinite;
         }
-        
+
         @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
-        
+
         .animate-spin-slow {
           animation: spin-slow 2s linear infinite;
         }
