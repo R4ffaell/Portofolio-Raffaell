@@ -448,7 +448,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="https://drive.google.com/file/d/1fgLrnyI37OMVOTCC3WDSqTQm09_esVEo/preview"
+            href="https://drive.google.com/file/d/1VecATyfKRrptXm3U2oB6sxGQZo3H7v3H/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 rounded-full ${
