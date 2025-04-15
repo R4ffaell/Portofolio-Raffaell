@@ -339,7 +339,7 @@ export default function Home() {
             >
               GitHub <ExternalLink size={14} />
             </Link>{" "}
-            to see what I'm working on, from invoice fraud detection to driver
+            to see what I'm working on, from helmet to driver
             monitoring systems.
           </h2>
         </div>
@@ -364,7 +364,7 @@ export default function Home() {
           >
             <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
               <img
-                src="/images/Distracted.png"
+                src="/images/Distracted.jpg"
                 alt="Driver Monitoring Screenshot"
                 className="object-cover w-full h-full"
               />
