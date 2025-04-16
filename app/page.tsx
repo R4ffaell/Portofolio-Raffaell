@@ -35,28 +35,27 @@ const technologies = {
 
 // Featured project to showcase directly on homepage
 const featuredProject = allProjects;
-  // allProjects.find((project) => project.featured && project.published) ||
-  // allProjects
-  //   .filter((project) => project.published)
-  //   .sort((a, b) => {
-  //     const dateA = a.date ? new Date(a.date).getTime() : 0;
-  //     const dateB = b.date ? new Date(b.date).getTime() : 0;
-  //     return dateB - dateA;
-  //   })[0];
-
+// allProjects.find((project) => project.featured && project.published) ||
+// allProjects
+//   .filter((project) => project.published)
+//   .sort((a, b) => {
+//     const dateA = a.date ? new Date(a.date).getTime() : 0;
+//     const dateB = b.date ? new Date(b.date).getTime() : 0;
+//     return dateB - dateA;
+//   })[0];
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollIndicator, setScrollIndicator] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [themeChanging, setThemeChanging] = useState(false);
-  const [current, setCurrent] = useState(0)
+  const [current, setCurrent] = useState(0);
   const total = featuredProject.length;
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % total)
-    }, 2500) // fast switch every 2.5s
+      setCurrent((prev) => (prev + 1) % total);
+    }, 2500); // fast switch every 2.5s
 
     const timer = setTimeout(() => setIsLoaded(true), 100);
     const handleScroll = () => {
@@ -123,14 +122,13 @@ export default function Home() {
       className={`relative flex flex-col items-center w-screen min-h-screen overflow-hidden transition-all duration-700 ${
         darkMode
           ? "bg-gradient-to-tl from-black via-zinc-800/20 to-black text-white"
-          : "bg-gradient-to-tl from-sky-50 via-blue-50/20 to-indigo-50 text-blue-950"
+          : "bg-gradient-to-tl from-gray-50 via-slate-50/20 to-gray-100 text-gray-900"
       } ${themeChanging ? "scale-[0.98] blur-sm" : "scale-100 blur-0"}`}
     >
-      
       <div
         className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-700 ${
           themeChanging ? "opacity-100" : "opacity-0"
-        } ${darkMode ? "bg-sky-100" : "bg-black"}`}
+        } ${darkMode ? "bg-gray-100" : "bg-black"}`}
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <div
@@ -141,7 +139,7 @@ export default function Home() {
             {darkMode ? (
               <Sun size={64} className="text-amber-500 animate-spin-slow" />
             ) : (
-              <Moon size={64} className="text-indigo-300 animate-spin-slow" />
+              <Moon size={64} className="text-gray-400 animate-spin-slow" />
             )}
           </div>
         </div>
@@ -168,14 +166,14 @@ export default function Home() {
                   className={`text-sm ${
                     darkMode
                       ? "text-zinc-400 hover:text-zinc-100"
-                      : "text-blue-700 hover:text-blue-900"
+                      : "text-gray-600 hover:text-gray-900"
                   } transition duration-300 relative group`}
                   aria-label={`Go to ${item.name}`}
                 >
                   {item.name}
                   <span
                     className={`absolute -bottom-1 left-0 w-0 h-px ${
-                      darkMode ? "bg-zinc-100" : "bg-blue-800"
+                      darkMode ? "bg-zinc-100" : "bg-gray-800"
                     } transition-all duration-300 group-hover:w-full`}
                   ></span>
                 </Link>
@@ -189,7 +187,7 @@ export default function Home() {
                 className={`inline-flex items-center justify-center p-1.5 ${
                   darkMode
                     ? "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50"
-                    : "text-blue-700 hover:text-blue-900 hover:bg-blue-100/50"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200/50"
                 } transition-colors rounded-full`}
                 aria-label="GitHub profile"
               >
@@ -202,7 +200,7 @@ export default function Home() {
                 className={`inline-flex items-center justify-center p-1.5 ${
                   darkMode
                     ? "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50"
-                    : "text-blue-700 hover:text-blue-900 hover:bg-blue-100/50"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200/50"
                 } transition-colors rounded-full overflow-hidden relative`}
                 aria-label={
                   darkMode ? "Switch to light mode" : "Switch to dark mode"
@@ -211,7 +209,7 @@ export default function Home() {
               >
                 <span
                   className={`absolute inset-0 ${
-                    darkMode ? "bg-zinc-600" : "bg-blue-200"
+                    darkMode ? "bg-zinc-600" : "bg-gray-300"
                   } opacity-0 transition-opacity duration-300 ${
                     themeChanging ? "opacity-20" : ""
                   }`}
@@ -241,17 +239,14 @@ export default function Home() {
         className={`hidden w-screen h-px md:block ${
           darkMode
             ? "bg-gradient-to-r from-transparent via-zinc-300/50 to-transparent"
-            : "bg-gradient-to-r from-transparent via-blue-300/50 to-transparent"
+            : "bg-gradient-to-r from-transparent via-gray-400/30 to-transparent"
         } transition-opacity duration-1000 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
       />
 
       {darkMode && (
-        <Particles
-          className=" inset-0 -z-10 animate-fade-in"
-          quantity={150}
-        />
+        <Particles className=" inset-0 -z-10 animate-fade-in" quantity={150} />
       )}
 
       {!darkMode && (
@@ -266,7 +261,7 @@ export default function Home() {
           className={`py-3 px-1 text-4xl sm:text-6xl md:text-8xl font-display bg-clip-text text-transparent ${
             darkMode
               ? "bg-gradient-to-r from-zinc-100 via-white to-zinc-100"
-              : "bg-gradient-to-r from-blue-800 via-indigo-900 to-blue-800"
+              : "bg-gradient-to-r from-gray-800 via-indigo-900 to-gray-800"
           } whitespace-nowrap cursor-default text-edge-outline drop-shadow-md transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
@@ -276,7 +271,7 @@ export default function Home() {
 
         <p
           className={`mt-4 text-xl ${
-            darkMode ? "text-zinc-300" : "text-blue-800"
+            darkMode ? "text-zinc-300" : "text-gray-700"
           } font-light transition-all duration-1000 delay-200 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
@@ -296,7 +291,7 @@ export default function Home() {
                 className={`text-xs px-3 py-1 ${
                   darkMode
                     ? "bg-zinc-800/60 text-zinc-300"
-                    : "bg-blue-100/60 text-blue-800"
+                    : "bg-gray-200/60 text-gray-800"
                 } rounded-full font-mono whitespace-nowrap flex items-center gap-2`}
               >
                 <span
@@ -318,7 +313,7 @@ export default function Home() {
           className={`hidden w-screen h-px md:block ${
             darkMode
               ? "bg-gradient-to-r from-transparent via-zinc-300/50 to-transparent"
-              : "bg-gradient-to-r from-transparent via-blue-300/50 to-transparent"
+              : "bg-gradient-to-r from-transparent via-gray-400/30 to-transparent"
           } transition-opacity duration-1000 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
@@ -331,7 +326,7 @@ export default function Home() {
         >
           <h2
             className={`text-sm sm:text-base ${
-              darkMode ? "text-zinc-400" : "text-blue-700"
+              darkMode ? "text-zinc-400" : "text-gray-600"
             } leading-relaxed`}
           >
             I'm a final-year Computer Engineering student who loves building
@@ -345,7 +340,7 @@ export default function Home() {
               className={`inline-flex items-center gap-1 ${
                 darkMode
                   ? "text-zinc-300 hover:text-white"
-                  : "text-blue-800 hover:text-blue-900"
+                  : "text-gray-700 hover:text-gray-900"
               } underline decoration-dotted underline-offset-2 transition-colors`}
             >
               GitHub <ExternalLink size={14} />
@@ -357,7 +352,11 @@ export default function Home() {
 
         {/* Featured Project Section */}
         <div className="max-w-4xl w-full px-6 mb-8 transition-all duration-1000 delay-400 opacity-100 translate-y-0">
-          <h3 className={`text-xl font-medium mb-4 text-center ${darkMode ? 'text-zinc-200' : 'text-blue-900'}`}>
+          <h3
+            className={`text-xl font-medium mb-4 text-center ${
+              darkMode ? "text-zinc-200" : "text-gray-900"
+            }`}
+          >
             Featured Projects
           </h3>
 
@@ -366,33 +365,36 @@ export default function Home() {
               <div
                 key={idx}
                 className={`absolute top-0 left-0 w-full transition-opacity duration-700 ease-in-out ${
-                  idx === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  idx === current
+                    ? "opacity-100 z-10"
+                    : "opacity-0 z-0 pointer-events-none"
                 }`}
               >
                 <div
                   className={`rounded-lg overflow-hidden ${
-                    darkMode ? 'bg-zinc-800/60' : 'bg-blue-100/60'
+                    darkMode ? "bg-zinc-800/60" : "bg-gray-100/60"
                   } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm`}
                 >
                   <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
                     <img
-                      src={project.image || '/images/Distracted.jpg'}
+                      src={project.image || "/images/Distracted.jpg"}
                       alt={`${project.title} Screenshot`}
                       className="object-cover w-full h-full"
                     />
                   </div>
 
+
                   <div className="flex-1 flex flex-col">
                     <h4
                       className={`text-lg font-medium ${
-                        darkMode ? 'text-white' : 'text-blue-900'
+                        darkMode ? 'text-white' : 'text-gray-900'
                       } mb-2`}
                     >
                       {project.title}
                     </h4>
                     <p
                       className={`text-sm ${
-                        darkMode ? 'text-zinc-300' : 'text-blue-800'
+                        darkMode ? 'text-zinc-300' : 'text-gray-700'
                       } mb-4`}
                     >
                       {project.description}
@@ -407,14 +409,14 @@ export default function Home() {
                             className={`inline-flex items-center gap-1 text-xs ${
                               darkMode
                                 ? 'text-zinc-400 hover:text-zinc-100'
-                                : 'text-blue-700 hover:text-blue-900'
+                                : 'text-gray-600 hover:text-gray-900'
                             } transition-colors`}
                           >
                             <Github size={14} /> View Code
                           </Link>
                           <span
                             className={`text-xs ${
-                              darkMode ? 'text-zinc-500' : 'text-blue-500'
+                              darkMode ? 'text-zinc-500' : 'text-gray-500'
                             }`}
                           >
                             •
@@ -429,7 +431,7 @@ export default function Home() {
                           className={`inline-flex items-center gap-1 text-xs ${
                             darkMode
                               ? 'text-zinc-400 hover:text-zinc-100'
-                              : 'text-blue-700 hover:text-blue-900'
+                              : 'text-gray-600 hover:text-gray-900'
                           } transition-colors`}
                         >
                           <ExternalLink size={14} /> Live Demo
@@ -443,7 +445,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Project and Resume Buttons - Now properly positioned directly under featured projects */}
+        {/* Project & Resume Links */}
         <div
           className={`flex gap-4 mb-16 transition-all duration-1000 delay-500 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -454,16 +456,16 @@ export default function Home() {
             className={`group flex items-center justify-center rounded-full ${
               darkMode
                 ? "bg-zinc-800/70 text-zinc-300 hover:bg-zinc-700 hover:text-white"
-                : "bg-blue-100/70 text-blue-700 hover:bg-blue-200 hover:text-blue-900"
+                : "bg-gray-200/70 text-gray-700 hover:bg-gray-300 hover:text-gray-900"
             } px-6 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 ${
-              darkMode ? "focus:ring-zinc-500/50" : "focus:ring-blue-400/50"
+              darkMode ? "focus:ring-zinc-500/50" : "focus:ring-gray-400/50"
             } focus:ring-offset-2 overflow-hidden`}
           >
             <span className="z-10">Explore My Projects</span>
             <span className="overflow-hidden rounded-full">
               <span
                 className={`aspect-square w-full origin-center -translate-x-full rounded-full ${
-                  darkMode ? "bg-zinc-600/40" : "bg-blue-300/40"
+                  darkMode ? "bg-zinc-600/40" : "bg-gray-400/40"
                 } transition-all duration-500 group-hover:translate-x-0 group-hover:scale-150`}
               />
             </span>
@@ -476,9 +478,9 @@ export default function Home() {
             className={`inline-flex items-center gap-2 rounded-full ${
               darkMode
                 ? "bg-transparent text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500"
-                : "bg-transparent text-blue-700 hover:text-blue-900 border border-blue-200 hover:border-blue-300"
+                : "bg-transparent text-gray-700 hover:text-gray-900 border border-gray-300 hover:border-gray-400"
             } px-6 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 ${
-              darkMode ? "focus:ring-zinc-500/50" : "focus:ring-blue-400/50"
+              darkMode ? "focus:ring-zinc-500/50" : "focus:ring-gray-400/50"
             } focus:ring-offset-2`}
           >
             <FileText size={16} />
@@ -491,14 +493,14 @@ export default function Home() {
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-70">
           <ChevronDown
             size={20}
-            className={darkMode ? "text-zinc-400" : "text-blue-600"}
+            className={darkMode ? "text-zinc-400" : "text-gray-600"}
           />
         </div>
       )}
 
       <footer
         className={`w-full py-6 mt-auto ${
-          darkMode ? "text-zinc-500" : "text-blue-600"
+          darkMode ? "text-zinc-500" : "text-gray-500"
         } text-center text-xs`}
       >
         <p>
@@ -520,7 +522,7 @@ export default function Home() {
         }
         .text-edge-outline {
           -webkit-text-stroke: 1px
-            ${darkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(30, 58, 138, 0.1)"};
+            ${darkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(75, 85, 99, 0.1)"};
         }
         @media (prefers-reduced-motion) {
           .animate-marquee {
@@ -537,7 +539,7 @@ export default function Home() {
           height: 200%;
           background: radial-gradient(
             circle at center,
-            rgba(191, 219, 254, 0.3) 0%,
+            rgba(229, 231, 235, 0.4) 0%,
             rgba(255, 255, 255, 0) 70%
           );
           opacity: ${darkMode ? 0 : 1};
@@ -595,8 +597,8 @@ export default function Home() {
           border-radius: 50%;
           background: linear-gradient(
             135deg,
-            rgba(147, 197, 253, 0.3),
-            rgba(191, 219, 254, 0.1)
+            rgba(209, 213, 219, 0.3),
+            rgba(229, 231, 235, 0.1)
           );
           filter: blur(20px);
         }
