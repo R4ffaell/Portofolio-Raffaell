@@ -20,10 +20,13 @@ export const Project = defineDocumentType(() => ({
 	name: "Project",
 	filePathPattern: "./projects/**/*.mdx",
 	contentType: "mdx",
-
 	fields: {
 		published: {
 			type: "boolean",
+		},
+		featured: {  // Add this field
+			type: "boolean",
+			default: false,
 		},
 		title: {
 			type: "string",
@@ -40,6 +43,9 @@ export const Project = defineDocumentType(() => ({
 			type: "string",
 		},
 		repository: {
+			type: "string",
+		},
+		image: {  // Add this field
 			type: "string",
 		},
 	},

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { allProjects } from "contentlayer/generated";
 import Particles from "./components/particles";
 import {
   Github,
@@ -33,14 +34,15 @@ const technologies = {
 };
 
 // Featured project to showcase directly on homepage
-const featuredProject = {
-  title: "Driver Monitoring System",
-  description:
-    "Real-time facial analysis to detect driver drowsiness, distraction, yawn using computer vision.",
-  image: "/images/Distracted.png", // ✅ tanpa "public/"
-  github: "https://github.com/R4ffaell/driver-monitoring",
-  demo: "https://driver-monitoring-demo.vercel.app",
-};
+const featuredProject =
+  allProjects.find((project) => project.featured && project.published) ||
+  allProjects
+    .filter((project) => project.published)
+    .sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0;
+      const dateB = b.date ? new Date(b.date).getTime() : 0;
+      return dateB - dateA;
+    })[0];
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -339,8 +341,8 @@ export default function Home() {
             >
               GitHub <ExternalLink size={14} />
             </Link>{" "}
-            to see what I'm working on, from helmet to driver
-            monitoring systems.
+            to see what I'm working on, from helmet to driver monitoring
+            systems.
           </h2>
         </div>
 
@@ -357,69 +359,85 @@ export default function Home() {
           >
             Featured Project
           </h3>
-          <div
-            className={`rounded-lg overflow-hidden ${
-              darkMode ? "bg-zinc-800/60" : "bg-blue-100/60"
-            } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm transition-all duration-500`}
-          >
-            <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
-              <img
-                src="/images/Distracted.jpg"
-                alt="Driver Monitoring Screenshot"
-                className="object-cover w-full h-full"
-              />
-            </div>
+          {featuredProject ? (
+            <div
+              className={`rounded-lg overflow-hidden ${
+                darkMode ? "bg-zinc-800/60" : "bg-blue-100/60"
+              } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm transition-all duration-500`}
+            >
+              <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
+                <img
+                  src={featuredProject.image || "/images/placeholder.jpg"}
+                  alt={`${featuredProject.title} Screenshot`}
+                  className="object-cover w-full h-full"
+                />
+              </div>
 
-            <div className="flex-1 flex flex-col">
-              <h4
-                className={`text-lg font-medium ${
-                  darkMode ? "text-white" : "text-blue-900"
-                } mb-2`}
-              >
-                {featuredProject.title}
-              </h4>
-              <p
-                className={`text-sm ${
-                  darkMode ? "text-zinc-300" : "text-blue-800"
-                } mb-4`}
-              >
-                {featuredProject.description}
-              </p>
-              <div className="flex items-center gap-2 mt-auto">
-                <Link
-                  href={featuredProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 text-xs ${
-                    darkMode
-                      ? "text-zinc-400 hover:text-zinc-100"
-                      : "text-blue-700 hover:text-blue-900"
-                  } transition-colors`}
+              <div className="flex-1 flex flex-col">
+                <h4
+                  className={`text-lg font-medium ${
+                    darkMode ? "text-white" : "text-blue-900"
+                  } mb-2`}
                 >
-                  <Github size={14} /> View Code
-                </Link>
-                <span
-                  className={`text-xs ${
-                    darkMode ? "text-zinc-500" : "text-blue-500"
-                  }`}
+                  {featuredProject.title}
+                </h4>
+                <p
+                  className={`text-sm ${
+                    darkMode ? "text-zinc-300" : "text-blue-800"
+                  } mb-4`}
                 >
-                  •
-                </span>
-                <Link
-                  href={featuredProject.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 text-xs ${
-                    darkMode
-                      ? "text-zinc-400 hover:text-zinc-100"
-                      : "text-blue-700 hover:text-blue-900"
-                  } transition-colors`}
-                >
-                  <ExternalLink size={14} /> Live Demo
-                </Link>
+                  {featuredProject.description}
+                </p>
+                <div className="flex items-center gap-2 mt-auto">
+                  {featuredProject.repository && (
+                    <>
+                      <Link
+                        href={featuredProject.repository}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`inline-flex items-center gap-1 text-xs ${
+                          darkMode
+                            ? "text-zinc-400 hover:text-zinc-100"
+                            : "text-blue-700 hover:text-blue-900"
+                        } transition-colors`}
+                      >
+                        <Github size={14} /> View Code
+                      </Link>
+                      <span
+                        className={`text-xs ${
+                          darkMode ? "text-zinc-500" : "text-blue-500"
+                        }`}
+                      >
+                        •
+                      </span>
+                    </>
+                  )}
+                  {featuredProject.url && (
+                    <Link
+                      href={featuredProject.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1 text-xs ${
+                        darkMode
+                          ? "text-zinc-400 hover:text-zinc-100"
+                          : "text-blue-700 hover:text-blue-900"
+                      } transition-colors`}
+                    >
+                      <ExternalLink size={14} /> Live Demo
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className={`text-center py-8 ${
+                darkMode ? "text-zinc-400" : "text-blue-700"
+              }`}
+            >
+              No featured project available
+            </div>
+          )}
         </div>
 
         <div
