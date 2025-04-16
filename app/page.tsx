@@ -34,23 +34,31 @@ const technologies = {
 };
 
 // Featured project to showcase directly on homepage
-const featuredProject =
-  allProjects.find((project) => project.featured && project.published) ||
-  allProjects
-    .filter((project) => project.published)
-    .sort((a, b) => {
-      const dateA = a.date ? new Date(a.date).getTime() : 0;
-      const dateB = b.date ? new Date(b.date).getTime() : 0;
-      return dateB - dateA;
-    })[0];
+const featuredProject = allProjects;
+  // allProjects.find((project) => project.featured && project.published) ||
+  // allProjects
+  //   .filter((project) => project.published)
+  //   .sort((a, b) => {
+  //     const dateA = a.date ? new Date(a.date).getTime() : 0;
+  //     const dateB = b.date ? new Date(b.date).getTime() : 0;
+  //     return dateB - dateA;
+  //   })[0];
+
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollIndicator, setScrollIndicator] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [themeChanging, setThemeChanging] = useState(false);
-
+  const [current, setCurrent] = useState(0)
+  const total = featuredProject.length;
   useEffect(() => {
+
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % total)
+    }, 2500) // fast switch every 2.5s
+
+
     const timer = setTimeout(() => setIsLoaded(true), 100);
     const handleScroll = () => {
       if (window.scrollY > 10) setScrollIndicator(false);
@@ -70,7 +78,7 @@ export default function Home() {
       clearTimeout(timer);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [total]);
 
   const toggleTheme = () => {
     setThemeChanging(true);
@@ -240,13 +248,13 @@ export default function Home() {
 
       {darkMode && (
         <Particles
-          className="absolute inset-0 -z-10 animate-fade-in"
+          className=" inset-0 -z-10 animate-fade-in"
           quantity={150}
         />
       )}
 
       {!darkMode && (
-        <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className=" inset-0 -z-10 overflow-hidden">
           <div className="light-rays"></div>
           <div className="floating-shapes"></div>
         </div>
@@ -347,28 +355,28 @@ export default function Home() {
         </div>
 
         {/* Featured Project Section */}
-        <div
-          className={`max-w-4xl w-full px-6 mb-16 transition-all duration-1000 delay-400 ${
-            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <h3
-            className={`text-xl font-medium mb-4 text-center ${
-              darkMode ? "text-zinc-200" : "text-blue-900"
+        <div className="max-w-4xl w-full px-6 mb-16 transition-all duration-1000 delay-400 opacity-100 translate-y-0">
+      <h3 className={`text-xl font-medium mb-4 text-center ${darkMode ? 'text-zinc-200' : 'text-blue-900'}`}>
+        Featured Projects
+      </h3>
+
+      <div className="relative w-full h-full">
+        {featuredProject.map((project, idx) => (
+          <div
+            key={idx}
+            className={`absolute top-0 left-0 w-full transition-opacity duration-700 ease-in-out ${
+              idx === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
             }`}
           >
-            Featured Project
-          </h3>
-          {featuredProject ? (
             <div
               className={`rounded-lg overflow-hidden ${
-                darkMode ? "bg-zinc-800/60" : "bg-blue-100/60"
-              } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm transition-all duration-500`}
+                darkMode ? 'bg-zinc-800/60' : 'bg-blue-100/60'
+              } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm`}
             >
               <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
                 <img
-                  src={featuredProject.image || "/images/Distracted.jpg"}
-                  alt={`${featuredProject.title} Screenshot`}
+                  src={project.image || '/images/Distracted.jpg'}
+                  alt={`${project.title} Screenshot`}
                   className="object-cover w-full h-full"
                 />
               </div>
@@ -376,51 +384,51 @@ export default function Home() {
               <div className="flex-1 flex flex-col">
                 <h4
                   className={`text-lg font-medium ${
-                    darkMode ? "text-white" : "text-blue-900"
+                    darkMode ? 'text-white' : 'text-blue-900'
                   } mb-2`}
                 >
-                  {featuredProject.title}
+                  {project.title}
                 </h4>
                 <p
                   className={`text-sm ${
-                    darkMode ? "text-zinc-300" : "text-blue-800"
+                    darkMode ? 'text-zinc-300' : 'text-blue-800'
                   } mb-4`}
                 >
-                  {featuredProject.description}
+                  {project.description}
                 </p>
                 <div className="flex items-center gap-2 mt-auto">
-                  {featuredProject.repository && (
+                  {project.repository && (
                     <>
                       <Link
-                        href={featuredProject.repository}
+                        href={project.repository}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`inline-flex items-center gap-1 text-xs ${
                           darkMode
-                            ? "text-zinc-400 hover:text-zinc-100"
-                            : "text-blue-700 hover:text-blue-900"
+                            ? 'text-zinc-400 hover:text-zinc-100'
+                            : 'text-blue-700 hover:text-blue-900'
                         } transition-colors`}
                       >
                         <Github size={14} /> View Code
                       </Link>
                       <span
                         className={`text-xs ${
-                          darkMode ? "text-zinc-500" : "text-blue-500"
+                          darkMode ? 'text-zinc-500' : 'text-blue-500'
                         }`}
                       >
                         •
                       </span>
                     </>
                   )}
-                  {featuredProject.url && (
+                  {project.url && (
                     <Link
-                      href={featuredProject.url}
+                      href={project.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`inline-flex items-center gap-1 text-xs ${
                         darkMode
-                          ? "text-zinc-400 hover:text-zinc-100"
-                          : "text-blue-700 hover:text-blue-900"
+                          ? 'text-zinc-400 hover:text-zinc-100'
+                          : 'text-blue-700 hover:text-blue-900'
                       } transition-colors`}
                     >
                       <ExternalLink size={14} /> Live Demo
@@ -429,25 +437,19 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          ) : (
-            <div
-              className={`text-center py-8 ${
-                darkMode ? "text-zinc-400" : "text-blue-700"
-              }`}
-            >
-              No featured project available
-            </div>
-          )}
-        </div>
-
-        <div
+          </div>
+        ))}
+      </div>
+      
+    </div>
+    <div
           className={`flex gap-4 transition-all duration-1000 delay-500 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
-        >
-          <Link
+        > Ngentot
+          {/* <Link
             href="/projects"
-            className={`group relative inline-flex items-center justify-center rounded-full ${
+            className={`group items-center justify-center rounded-full ${
               darkMode
                 ? "bg-zinc-800/70 text-zinc-300 hover:bg-zinc-700 hover:text-white"
                 : "bg-blue-100/70 text-blue-700 hover:bg-blue-200 hover:text-blue-900"
@@ -455,10 +457,10 @@ export default function Home() {
               darkMode ? "focus:ring-zinc-500/50" : "focus:ring-blue-400/50"
             } focus:ring-offset-2 overflow-hidden`}
           >
-            <span className="relative z-10">Explore My Projects</span>
-            <span className="absolute inset-0 overflow-hidden rounded-full">
+            <span className=" z-10">Explore My Projects</span>
+            <span className=" overflow-hidden rounded-full">
               <span
-                className={`absolute left-0 aspect-square w-full origin-center -translate-x-full rounded-full ${
+                className={` aspect-square w-full origin-center -translate-x-full rounded-full ${
                   darkMode ? "bg-zinc-600/40" : "bg-blue-300/40"
                 } transition-all duration-500 group-hover:translate-x-0 group-hover:scale-150`}
               />
@@ -479,12 +481,14 @@ export default function Home() {
           >
             <FileText size={16} />
             <span>View Resume</span>
-          </Link>
+          </Link> */}
         </div>
-      </div>
+   
+        
+    </div>
 
       {scrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-70">
+        <div className=" bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-70">
           <ChevronDown
             size={20}
             className={darkMode ? "text-zinc-400" : "text-blue-600"}
