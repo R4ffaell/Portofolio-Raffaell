@@ -1,13 +1,53 @@
 ---
 title: Driver Behavior Detection System
-description: The Driver Behavior Detection System is a real-time computer vision application that identifies unsafe driver behaviors such as yawning, distraction, and drowsiness. Built using OpenCV, Mediapipe, and PyTorch, the system is optimized for edge deployment using Raspberry Pi 5. It includes hardware integration with a Pi Camera, LED indicators, buzzer alerts, and a GSM module (SIM808) for emergency communication. The model is also deployed as a web-based application, making it accessible and scalable.
+description: A real-time AI-powered system that detects and classifies unsafe driver behaviors such as drowsiness, distraction, and yawning using computer vision and deep learning. Deployed on Raspberry Pi 5 with real-time alerting and emergency communication via GSM.
 date: "2024-06-06"
 url: https://github.com/R4ffaell/driver-behavior-detection
 published: true
-repository: yourusername/driver-behavior-detection
-featured: true # Mark this as a featured project
+repository: R4ffaell/driver-behavior-detection
+featured: true
 ---
 
-[![](https://yourprojectimageurl.com/project-image.png)](https://github.com/yourusername/driver-behavior-detection)
+<img
+  src="https://raw.githubusercontent.com/R4ffaell/Driver-Monitoring-System-/main/Distracted.jpg"
+  alt="Driver Behavior Detection System"
+  width="100%"
+/>
 
-This project aims to improve road safety by detecting dangerous driver behaviors in real time. The system leverages deep learning for behavior classification and is integrated with physical components for alert mechanisms and remote notifications. It supports both local (Raspberry Pi) and cloud/web deployment for broader accessibility.
+## 🚗 Driver Behavior Detection System
+
+The **Driver Behavior Detection System** is a real-time computer vision solution designed to monitor driver attentiveness and ensure road safety. It leverages state-of-the-art deep learning techniques for behavior recognition and integrates seamlessly with hardware components for real-world deployment.
+
+### 💡 Key Features
+
+- **Real-Time Behavior Classification**  
+  Detects yawning, distraction, drowsiness, and more using facial landmarks and temporal motion tracking.
+
+- **Multi-Platform Deployment**
+
+  - 💻 **Web App**: Accessible via browser for demonstration or cloud deployment.
+  - 🍓 **Edge Device (Raspberry Pi 5)**: Optimized for low-latency, real-time inference using Pi Camera.
+
+- **Hardware Integration**
+
+  - 📷 Pi Camera: Captures live video feed.
+  - 🚨 LED + Buzzer: Instant visual and auditory alerts when unsafe behavior is detected.
+  - 📡 SIM808 GSM Module: Sends automated SMS alerts to emergency contacts in critical situations.
+
+- **Technologies Used**
+  - `OpenCV`, `MediaPipe`, and `PyTorch` for vision and modeling.
+  - `Flask` (for web interface), `RPi.GPIO` (for hardware control), and `pySerial` (for GSM communication).
+
+### 🧠 Model Training & Architecture
+
+- Behavior classification model trained using transfer learning on a custom annotated dataset.
+- Model evaluated on metrics like accuracy, F1-score, and latency for edge-readiness.
+- Post-processed with ONNX for efficient deployment on Raspberry Pi.
+
+### 🌍 Use Cases
+
+- Driver monitoring systems for logistics/fleet vehicles.
+- Embedded safety solutions for smart vehicles.
+- Real-time road safety demo in academic or research settings.
+
+### 📦 Project Structure

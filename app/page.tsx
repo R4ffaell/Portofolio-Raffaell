@@ -367,7 +367,7 @@ export default function Home() {
             >
               <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-zinc-700/30 flex items-center justify-center">
                 <img
-                  src={featuredProject.image || "/images/placeholder.jpg"}
+                  src={featuredProject.image || "/images/Distracted.jpg"}
                   alt={`${featuredProject.title} Screenshot`}
                   className="object-cover w-full h-full"
                 />
