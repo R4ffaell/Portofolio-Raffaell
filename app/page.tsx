@@ -45,7 +45,8 @@ export default function Home() {
   const total = featuredProject.length;
   
   // Canvas reference for background animation
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,8 +81,9 @@ export default function Home() {
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    let animationFrameId;
-    const particles = [];
+
+    let animationFrameId: number;
+    const particles: { x: number; y: number; radius: number; color: string; vx: number; vy: number; }[] = [];
     
     // Set canvas dimensions
     const resizeCanvas = () => {
@@ -114,6 +116,7 @@ export default function Home() {
     
     // Animation function
     const animate = () => {
+      if(ctx){
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Draw particles
@@ -169,6 +172,7 @@ export default function Home() {
       }
       
       animationFrameId = requestAnimationFrame(animate);
+    }
     };
     
     // Initialize and start animation
