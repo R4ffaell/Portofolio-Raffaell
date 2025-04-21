@@ -8,6 +8,92 @@ featured: true
 repository: yourusername/ecommerce-twitter-analysis
 ---
 
-[![](https://raw.githubusercontent.com/R4ffaell/Driver-Monitoring-System-/main/Distracted.jpg)](https://github.com/yourusername/ecommerce-twitter-analysis)
+[![E-commerce Sentiment Analysis Project](https://github.com/user-attachments/assets/42a34bd8-038b-40b9-b5b6-332440b5200c)](https://github.com/yourusername/ecommerce-twitter-analysis)
 
-This project combines social media mining and natural language processing to track consumer sentiment and brand reputation in the competitive online marketplace.
+# E-commerce Sentiment Analysis on Twitter
+
+A data-driven exploration of consumer sentiment toward Indonesia's leading e-commerce platforms — Shopee, Tokopedia, Lazada, Bukalapak, and Blibli. This project combines social media mining and natural language processing to track consumer sentiment and brand reputation in the competitive online marketplace.
+
+## Project Overview
+
+This analysis provides actionable insights into what customers are saying about major e-commerce players, helping to identify:
+
+- **Brand Perception Trends**: Track how sentiment changes over time and during key events
+- **Competitive Landscape**: Compare sentiment across different platforms
+- **Pain Points**: Discover recurring customer complaints and issues
+- **Success Stories**: Identify what customers appreciate most
+- **Regional Differences**: Analyze sentiment variations across Indonesia
+
+## Methodology
+
+Our approach combines data engineering with advanced natural language processing:
+
+### Data Collection
+
+- Twitter API integration for real-time and historical tweets
+- Targeted keyword filtering for relevant conversations
+- Metadata extraction including timestamps, user demographics, and engagement metrics
+
+### Processing Pipeline
+
+```
+Raw Tweets → Preprocessing → Sentiment Classification → Analysis → Visualization
+```
+
+### Technologies Used
+
+- **Data Collection**: Tweepy, Selenium
+- **Preprocessing**: NLTK, Pandas, Regular Expressions
+- **Sentiment Analysis**: Transformer models (IndoBERT), TextBlob
+- **Visualization**: Matplotlib, Seaborn, Plotly, Tableau
+
+## Key Findings
+
+Our analysis revealed several significant insights:
+
+1. **Platform Comparison**: Shopee maintained the highest positive sentiment ratio (67%), while Lazada showed the most improvement over the study period
+2. **Common Issues**: Delivery delays and customer service were the most frequent negative sentiment drivers
+3. **Seasonal Patterns**: All platforms experienced sentiment fluctuations around major sales events
+4. **Topic Clusters**: Price, delivery speed, and product authenticity emerged as key conversation themes
+
+## Getting Started
+
+To run this analysis on your own:
+
+```bash
+# Clone the repository
+https://github.com/R4ffaell/Analisis-Opini-Publik-terhadap-E-Commerce-di-Indonesia-Berdasarkan-Data-Twitter.git
+
+# Install dependencies
+cd ecommerce-twitter-analysis
+pip install -r requirements.txt
+
+# Configure Twitter API credentials
+cp config.example.py config.py
+# Edit config.py with your credentials
+
+# Run data collection
+python src/collect_tweets.py
+
+# Run analysis
+python src/analyze_sentiment.py
+```
+
+## Interactive Dashboard
+
+Our findings are available through an interactive dashboard that allows you to:
+
+- Filter by platform, date range, and sentiment category
+- Explore trending topics and keywords
+- Examine geographical sentiment distribution
+- Track sentiment changes over custom time periods
+
+## Business Applications
+
+This analysis can help e-commerce stakeholders:
+
+- Benchmark against competitors
+- Identify areas for operational improvement
+- Monitor marketing campaign effectiveness
+- Detect emerging issues before they escalate
+- Track brand health metrics over time
