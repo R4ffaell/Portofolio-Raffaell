@@ -478,50 +478,74 @@ export default function Home() {
           </h3>
 
           <div className="relative w-full" style={{ minHeight: "300px" }}>
-            {featuredProject.map((project, idx) => (
-              <div
-                key={idx}
-                className={`absolute top-0 left-0 w-full transition-opacity duration-700 ease-in-out ${
-                  idx === current
-                    ? "opacity-100 z-10"
-                    : "opacity-0 z-0 pointer-events-none"
-                }`}
-              >
+            {featuredProject
+              .filter(project => project.published)
+              .map((project, idx) => (
                 <div
-                  className={`rounded-lg overflow-hidden ${
-                    darkMode 
-                      ? "bg-gray-800/90 border border-gray-700" 
-                      : "bg-white/90 border border-gray-200"
-                  } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm shadow-lg`}
+                  key={idx}
+                  className={`absolute top-0 left-0 w-full transition-opacity duration-700 ease-in-out ${
+                    idx === current
+                      ? "opacity-100 z-10"
+                      : "opacity-0 z-0 pointer-events-none"
+                  }`}
                 >
-                  <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-gray-900/30 flex items-center justify-center">
-                    <img
-                      src={project.image || "/images/Distracted.jpg"}
-                      alt={`${project.title} Screenshot`}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
+                  <div
+                    className={`rounded-lg overflow-hidden ${
+                      darkMode 
+                        ? "bg-gray-800/90 border border-gray-700" 
+                        : "bg-white/90 border border-gray-200"
+                    } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm shadow-lg`}
+                  >
+                    <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-gray-900/30 flex items-center justify-center">
+                      <img
+                        src={project.image || "/images/Distracted.jpg"}
+                        alt={`${project.title} Screenshot`}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
 
-                  <div className="flex-1 flex flex-col">
-                    <h4
-                      className={`text-lg font-medium ${
-                        darkMode ? 'text-white' : 'text-gray-900'
-                      } mb-2`}
-                    >
-                      {project.title}
-                    </h4>
-                    <p
-                      className={`text-sm ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      } mb-4`}
-                    >
-                      {project.description}
-                    </p>
-                    <div className="flex items-center gap-2 mt-auto">
-                      {project.repository && (
-                        <>
+                    <div className="flex-1 flex flex-col">
+                      <h4
+                        className={`text-lg font-medium ${
+                          darkMode ? 'text-white' : 'text-gray-900'
+                        } mb-2`}
+                      >
+                        {project.title}
+                      </h4>
+                      <p
+                        className={`text-sm ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        } mb-4`}
+                      >
+                        {project.description}
+                      </p>
+                      <div className="flex items-center gap-2 mt-auto">
+                        {project.repository && (
+                          <>
+                            <Link
+                              href={project.repository}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1 text-xs ${
+                                darkMode
+                                  ? 'text-blue-300 hover:text-blue-200'
+                                  : 'text-blue-600 hover:text-blue-800'
+                              } transition-colors`}
+                            >
+                              <Github size={14} /> View Code
+                            </Link>
+                            <span
+                              className={`text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-400'
+                              }`}
+                            >
+                              •
+                            </span>
+                          </>
+                        )}
+                        {project.url && (
                           <Link
-                            href={project.repository}
+                            href={project.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`inline-flex items-center gap-1 text-xs ${
@@ -530,36 +554,14 @@ export default function Home() {
                                 : 'text-blue-600 hover:text-blue-800'
                             } transition-colors`}
                           >
-                            <Github size={14} /> View Code
+                            <ExternalLink size={14} /> Live Demo
                           </Link>
-                          <span
-                            className={`text-xs ${
-                              darkMode ? 'text-gray-500' : 'text-gray-400'
-                            }`}
-                          >
-                            •
-                          </span>
-                        </>
-                      )}
-                      {project.url && (
-                        <Link
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1 text-xs ${
-                            darkMode
-                              ? 'text-blue-300 hover:text-blue-200'
-                              : 'text-blue-600 hover:text-blue-800'
-                          } transition-colors`}
-                        >
-                          <ExternalLink size={14} /> Live Demo
-                        </Link>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
 
