@@ -631,17 +631,18 @@ export default function Home() {
       <style jsx global>{`
         @keyframes marquee {
           0% {
-            transform: translateX(0);
+            transform: translateX(100%); /* Mulai dari luar layar (kanan) */
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-100%); /* Keluar dari layar (kiri) */
           }
         }
-        
+
         .animate-marquee {
-          animation: marquee 20s linear infinite;
+          animation: marquee 40s linear infinite; /* Durasi animasi 20 detik */
+          will-change: transform;
         }
-        
+
         @media (prefers-reduced-motion) {
           .animate-marquee {
             animation: none;
