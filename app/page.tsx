@@ -43,16 +43,26 @@ export default function Home() {
   const [themeChanging, setThemeChanging] = useState(false);
   const [current, setCurrent] = useState(0);
   const total = featuredProject.length;
-  
+
   // Canvas reference for background animation
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    const switchProject = () => {
+      setCurrent((prev) => (prev + 1) % total);
+      timeout = setTimeout(switchProject, 2500); // Pindah setiap 2.5 detik
+    };
+
+    switchProject(); // Mulai transisi
+
+    return () => {
+      clearTimeout(timeout); // Bersihkan timeout saat komponen unmount
+    };
+  }, [total]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % total);
-    }, 2500); // fast switch every 2.5s
-
     const timer = setTimeout(() => setIsLoaded(true), 100);
     const handleScroll = () => {
       if (window.scrollY > 10) setScrollIndicator(false);
@@ -70,117 +80,131 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => {
       clearTimeout(timer);
-      clearInterval(interval);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [total]);
+  }, []);
 
   // Canvas animation effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
 
     let animationFrameId: number;
-    const particles: { x: number; y: number; radius: number; color: string; vx: number; vy: number; }[] = [];
-    
+    const particles: {
+      x: number;
+      y: number;
+      radius: number;
+      color: string;
+      vx: number;
+      vy: number;
+    }[] = [];
+
     // Set canvas dimensions
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    
+
     // Initialize canvas size
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
+    window.addEventListener("resize", resizeCanvas);
+
     // Create particles for light mode and dark mode
     const initParticles = () => {
       particles.length = 0;
       const particleCount = darkMode ? 100 : 50;
-      
+
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
           radius: darkMode ? Math.random() * 2 + 1 : Math.random() * 3 + 2,
-          color: darkMode ? 
-            `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.1})` : 
-            `rgba(100, 116, 139, ${Math.random() * 0.3 + 0.05})`,
+          color: darkMode
+            ? `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.1})`
+            : `rgba(100, 116, 139, ${Math.random() * 0.3 + 0.05})`,
           vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5
+          vy: (Math.random() - 0.5) * 0.5,
         });
       }
     };
-    
+
     // Animation function
     const animate = () => {
-      if(ctx){
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw particles
-      particles.forEach(particle => {
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color;
-        ctx.fill();
-        
-        // Move particles
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        
-        // Bounce off edges
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx = -particle.vx;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy = -particle.vy;
-      });
-      
-      // Connect particles that are close to each other (only in dark mode)
-      if (darkMode) {
-        particles.forEach((p1, i) => {
-          particles.slice(i + 1).forEach(p2 => {
-            const dx = p1.x - p2.x;
-            const dy = p1.y - p2.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 150) {
-              ctx.beginPath();
-              ctx.moveTo(p1.x, p1.y);
-              ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / 150)})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          });
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw particles
+        particles.forEach((particle) => {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          ctx.fillStyle = particle.color;
+          ctx.fill();
+
+          // Move particles
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          // Bounce off edges
+          if (particle.x < 0 || particle.x > canvas.width)
+            particle.vx = -particle.vx;
+          if (particle.y < 0 || particle.y > canvas.height)
+            particle.vy = -particle.vy;
         });
-      } else {
-        // Light mode gradient circles
-        ctx.fillStyle = 'rgba(241, 245, 249, 0.01)';
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, 300, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Add a subtle radial gradient
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2, canvas.height / 2, 0,
-          canvas.width / 2, canvas.height / 2, 500
-        );
-        gradient.addColorStop(0, 'rgba(226, 232, 240, 0.03)');
-        gradient.addColorStop(1, 'rgba(226, 232, 240, 0)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Connect particles that are close to each other (only in dark mode)
+        if (darkMode) {
+          particles.forEach((p1, i) => {
+            particles.slice(i + 1).forEach((p2) => {
+              const dx = p1.x - p2.x;
+              const dy = p1.y - p2.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance < 150) {
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${
+                  0.1 * (1 - distance / 150)
+                })`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            });
+          });
+        } else {
+          // Light mode gradient circles
+          ctx.fillStyle = "rgba(241, 245, 249, 0.01)";
+          ctx.beginPath();
+          ctx.arc(canvas.width / 2, canvas.height / 2, 300, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Add a subtle radial gradient
+          const gradient = ctx.createRadialGradient(
+            canvas.width / 2,
+            canvas.height / 2,
+            0,
+            canvas.width / 2,
+            canvas.height / 2,
+            500
+          );
+          gradient.addColorStop(0, "rgba(226, 232, 240, 0.03)");
+          gradient.addColorStop(1, "rgba(226, 232, 240, 0)");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        animationFrameId = requestAnimationFrame(animate);
       }
-      
-      animationFrameId = requestAnimationFrame(animate);
-    }
     };
-    
+
     // Initialize and start animation
     initParticles();
     animate();
-    
+
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
   }, [darkMode]);
@@ -226,9 +250,7 @@ export default function Home() {
   return (
     <div
       className={`relative flex flex-col items-center w-screen min-h-screen overflow-hidden transition-all duration-700 ${
-        darkMode
-          ? "bg-gray-950 text-white"
-          : "bg-slate-50 text-gray-900"
+        darkMode ? "bg-gray-950 text-white" : "bg-slate-50 text-gray-900"
       } ${themeChanging ? "scale-[0.98] blur-sm" : "scale-100 blur-0"}`}
     >
       {/* Theme transition overlay */}
@@ -253,10 +275,10 @@ export default function Home() {
       </div>
 
       {/* Canvas Background */}
-      <canvas 
-        ref={canvasRef} 
+      <canvas
+        ref={canvasRef}
         className="fixed inset-0 -z-10"
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: "none" }}
       />
 
       {/* Navigation */}
@@ -479,11 +501,11 @@ export default function Home() {
 
           <div className="relative w-full" style={{ minHeight: "300px" }}>
             {featuredProject
-              .filter(project => project.published)
+              .filter((project) => project.published && project.featured)
               .map((project, idx) => (
                 <div
                   key={idx}
-                  className={`absolute top-0 left-0 w-full transition-opacity duration-700 ease-in-out ${
+                  className={`absolute top-0 left-0 w-full transition-opacity duration-300 ease-linear ${
                     idx === current
                       ? "opacity-100 z-10"
                       : "opacity-0 z-0 pointer-events-none"
@@ -491,8 +513,8 @@ export default function Home() {
                 >
                   <div
                     className={`rounded-lg overflow-hidden ${
-                      darkMode 
-                        ? "bg-gray-800/90 border border-gray-700" 
+                      darkMode
+                        ? "bg-gray-800/90 border border-gray-700"
                         : "bg-white/90 border border-gray-200"
                     } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm shadow-lg`}
                   >
@@ -507,14 +529,14 @@ export default function Home() {
                     <div className="flex-1 flex flex-col">
                       <h4
                         className={`text-lg font-medium ${
-                          darkMode ? 'text-white' : 'text-gray-900'
+                          darkMode ? "text-white" : "text-gray-900"
                         } mb-2`}
                       >
                         {project.title}
                       </h4>
                       <p
                         className={`text-sm ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                          darkMode ? "text-gray-300" : "text-gray-700"
                         } mb-4`}
                       >
                         {project.description}
@@ -528,15 +550,15 @@ export default function Home() {
                               rel="noopener noreferrer"
                               className={`inline-flex items-center gap-1 text-xs ${
                                 darkMode
-                                  ? 'text-blue-300 hover:text-blue-200'
-                                  : 'text-blue-600 hover:text-blue-800'
+                                  ? "text-blue-300 hover:text-blue-200"
+                                  : "text-blue-600 hover:text-blue-800"
                               } transition-colors`}
                             >
                               <Github size={14} /> View Code
                             </Link>
                             <span
                               className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-400'
+                                darkMode ? "text-gray-500" : "text-gray-400"
                               }`}
                             >
                               •
@@ -550,8 +572,8 @@ export default function Home() {
                             rel="noopener noreferrer"
                             className={`inline-flex items-center gap-1 text-xs ${
                               darkMode
-                                ? 'text-blue-300 hover:text-blue-200'
-                                : 'text-blue-600 hover:text-blue-800'
+                                ? "text-blue-300 hover:text-blue-200"
+                                : "text-blue-600 hover:text-blue-800"
                             } transition-colors`}
                           >
                             <ExternalLink size={14} /> Live Demo
