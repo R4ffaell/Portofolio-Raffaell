@@ -1,0 +1,86 @@
+---
+title: Helmet Detection System with YOLOv8
+description: A computer vision system to detect helmet usage on construction workers using YOLOv8.
+date: "2025-04-23"
+published: true
+featured: true
+url: https://universe.roboflow.com/joseph-nelson/hard-hat-workers
+---
+
+![Helmet Detection](https://yourimageurl.com/helmet-detection.jpg)
+
+**Helmet Detection System** is an AI-powered object detection model built with **YOLOv8** to enhance construction site safety by identifying whether workers are wearing protective helmets.
+
+- 🎯 **Trained to detect construction helmets**.
+- ⚡ **Real-time inference-ready** using YOLOv8.
+- 🧠 Based on the open **_Hard Hat Workers_** dataset from Roboflow.
+- 🔁 **Reproducible pipeline** using Roboflow + Ultralytics + Google Colab.
+
+---
+
+### 🏗️ Why This Matters
+
+This project acts as an AI-powered safety compliance checker for construction environments. Manual safety enforcement is expensive and reactive—this system is proactive and automated.
+
+**Key benefits:**
+
+- ✅ **Runs efficiently** on CPUs or edge devices.
+- 🎥 **Easy to integrate** into site surveillance cameras.
+- 🔓 **Open-source** and customizable for other PPE types.
+
+---
+
+### 🚀 Use Case
+
+Imagine a smart CCTV at a construction site. It scans incoming workers, detects if they’re wearing helmets, and logs or alerts if not. No manual checking needed.
+
+---
+
+### 🔍 Detected Class
+
+- 🪖 head — labeled as helmet in the dataset.
+- 🪖 helmet — labeled as helmet in the dataset.
+- 🧍 body — labeled as the body (worker).
+
+---
+
+### 🏋️ Training the Model
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.pt")
+model.train(data="Hard-Hat-Workers-14/data.yaml", epochs=50, imgsz=640)
+```
+
+````
+
+---
+
+### 📊 Evaluation on Test Data
+
+```python
+metrics = model.val(data="Hard-Hat-Workers-14/data.yaml", split='test')
+```
+
+---
+
+### 🖼️ Predicting on a Folder of Images
+
+```python
+results = model.predict(source="Hard-Hat-Workers-14/test/images", save=True, conf=0.25)
+```
+
+---
+
+This project lays the foundation for more comprehensive safety tools — expand it with classes for vests, goggles, or even unsafe behaviors. With YOLOv8 and the right data, construction safety is smarter than ever.
+
+---
+
+[🔗 See Project on Roboflow](https://universe.roboflow.com/joseph-nelson/hard-hat-workers)
+
+```
+
+---
+```
+````
