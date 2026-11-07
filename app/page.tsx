@@ -1,691 +1,190 @@
-"use client";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { allProjects } from "contentlayer/generated";
-import Particles from "./components/particles";
-import {
-  Github,
-  ExternalLink,
-  ChevronDown,
-  FileText,
-  Moon,
-  Sun,
-} from "lucide-react";
+import { ProjectCard } from "./components/project-card";
+import { Reveal } from "./components/reveal";
+import { ScrollText } from "./components/scroll-text";
+import { highlights, jobs, technologies } from "./lib/profile";
+import { getFeaturedProjects } from "./lib/projects";
+import { site } from "./lib/site";
 
-const navigation = [
-  { name: "Projects", href: "/projects" },
-  { name: "Contact", href: "/contact" },
-];
-
-// Categorized technologies for better organization
-const technologies = {
-  frontend: ["React", "Next.js", "Tailwind CSS", "TypeScript"],
-  backend: ["Python", "FastAPI", "Node.js"],
-  data: ["Pandas", "NumPy", "Matplotlib", "Seaborn"],
-  ai_ml: ["OpenCV", "Mediapipe", "PyTorch", "TensorFlow", "Scikit-learn"],
-  deployment: ["Streamlit", "FastAPI", "Google Colab", "GitHub"],
-  tools: [
-    "Jupyter Notebook",
-    "Google Colab",
-    "PyCharm",
-    "Excel",
-    "Google Sheets",
-  ],
-};
-
-// Featured project to showcase directly on homepage
-const featuredProject = allProjects;
+const ABOUT =
+  "Computer Engineering graduate. Now delivering AI for enterprise clients, with end-to-end ownership from requirements to deployment.";
 
 export default function Home() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [scrollIndicator, setScrollIndicator] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
-  const [themeChanging, setThemeChanging] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const total = featuredProject.length;
-
-  // Canvas reference for background animation
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-
-    const switchProject = () => {
-      setCurrent((prev) => (prev + 1) % total);
-      timeout = setTimeout(switchProject, 2500); // Pindah setiap 2.5 detik
-    };
-
-    switchProject(); // Mulai transisi
-
-    return () => {
-      clearTimeout(timeout); // Bersihkan timeout saat komponen unmount
-    };
-  }, [total]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
-    const handleScroll = () => {
-      if (window.scrollY > 10) setScrollIndicator(false);
-      else setScrollIndicator(true);
-    };
-
-    // Check system preference for theme
-    if (typeof window !== "undefined") {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setDarkMode(prefersDark);
-    }
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // Canvas animation effect
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    let animationFrameId: number;
-    const particles: {
-      x: number;
-      y: number;
-      radius: number;
-      color: string;
-      vx: number;
-      vy: number;
-    }[] = [];
-
-    // Set canvas dimensions
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    // Initialize canvas size
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    // Create particles for light mode and dark mode
-    const initParticles = () => {
-      particles.length = 0;
-      const particleCount = darkMode ? 100 : 50;
-
-      for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: darkMode ? Math.random() * 2 + 1 : Math.random() * 3 + 2,
-          color: darkMode
-            ? `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.1})`
-            : `rgba(100, 116, 139, ${Math.random() * 0.3 + 0.05})`,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-        });
-      }
-    };
-
-    // Animation function
-    const animate = () => {
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw particles
-        particles.forEach((particle) => {
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          ctx.fillStyle = particle.color;
-          ctx.fill();
-
-          // Move particles
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-
-          // Bounce off edges
-          if (particle.x < 0 || particle.x > canvas.width)
-            particle.vx = -particle.vx;
-          if (particle.y < 0 || particle.y > canvas.height)
-            particle.vy = -particle.vy;
-        });
-
-        // Connect particles that are close to each other (only in dark mode)
-        if (darkMode) {
-          particles.forEach((p1, i) => {
-            particles.slice(i + 1).forEach((p2) => {
-              const dx = p1.x - p2.x;
-              const dy = p1.y - p2.y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-
-              if (distance < 150) {
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.strokeStyle = `rgba(255, 255, 255, ${
-                  0.1 * (1 - distance / 150)
-                })`;
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-              }
-            });
-          });
-        } else {
-          // Light mode gradient circles
-          ctx.fillStyle = "rgba(241, 245, 249, 0.01)";
-          ctx.beginPath();
-          ctx.arc(canvas.width / 2, canvas.height / 2, 300, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Add a subtle radial gradient
-          const gradient = ctx.createRadialGradient(
-            canvas.width / 2,
-            canvas.height / 2,
-            0,
-            canvas.width / 2,
-            canvas.height / 2,
-            500
-          );
-          gradient.addColorStop(0, "rgba(226, 232, 240, 0.03)");
-          gradient.addColorStop(1, "rgba(226, 232, 240, 0)");
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        animationFrameId = requestAnimationFrame(animate);
-      }
-    };
-
-    // Initialize and start animation
-    initParticles();
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [darkMode]);
-
-  const toggleTheme = () => {
-    setThemeChanging(true);
-    setTimeout(() => {
-      setDarkMode(!darkMode);
-      setTimeout(() => {
-        setThemeChanging(false);
-      }, 600); // Wait for animations to complete
-    }, 300);
-  };
-
-  // Create array of all techs for marquee
-  const allTechnologies = [
-    ...technologies.frontend.map((tech) => ({
-      name: tech,
-      category: "Frontend",
-    })),
-    ...technologies.backend.map((tech) => ({
-      name: tech,
-      category: "Backend",
-    })),
-    ...technologies.data.map((tech) => ({
-      name: tech,
-      category: "Data",
-    })),
-    ...technologies.ai_ml.map((tech) => ({
-      name: tech,
-      category: "AI/ML",
-    })),
-    ...technologies.deployment.map((tech) => ({
-      name: tech,
-      category: "Deployment",
-    })),
-    ...technologies.tools.map((tech) => ({
-      name: tech,
-      category: "Tools",
-    })),
-  ];
+  const featured = getFeaturedProjects(4);
 
   return (
-    <div
-      className={`relative flex flex-col items-center w-screen min-h-screen overflow-hidden transition-all duration-700 ${
-        darkMode ? "bg-gray-950 text-white" : "bg-slate-50 text-gray-900"
-      } ${themeChanging ? "scale-[0.98] blur-sm" : "scale-100 blur-0"}`}
-    >
-      {/* Theme transition overlay */}
-      <div
-        className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-700 ${
-          themeChanging ? "opacity-100" : "opacity-0"
-        } ${darkMode ? "bg-slate-50" : "bg-gray-950"}`}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className={`transition-transform duration-700 ${
-              themeChanging ? "scale-150 opacity-100" : "scale-0 opacity-0"
-            }`}
-          >
-            {darkMode ? (
-              <Sun size={64} className="text-amber-400 animate-spin-slow" />
-            ) : (
-              <Moon size={64} className="text-slate-300 animate-spin-slow" />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Canvas Background */}
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 -z-10"
-        style={{ pointerEvents: "none" }}
-      />
-
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 w-full z-40 transition-all duration-500 ${
-          isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-        } ${darkMode ? "bg-gray-950/70" : "bg-slate-50/70"} backdrop-blur-sm`}
-      >
-        <div className="mx-auto px-6 py-5 max-w-5xl flex items-center justify-between">
-          <Link
-            href="/"
-            className={`text-lg font-medium tracking-tight hover:opacity-80 transition ${
-              darkMode ? "text-white" : "text-gray-900"
-            }`}
-            aria-label="Home"
-          >
-            AR
-          </Link>
-          <ul className="flex items-center gap-6">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`text-sm ${
-                    darkMode
-                      ? "text-gray-300 hover:text-white"
-                      : "text-gray-600 hover:text-gray-900"
-                  } transition duration-300 relative group`}
-                  aria-label={`Go to ${item.name}`}
-                >
-                  {item.name}
-                  <span
-                    className={`absolute -bottom-1 left-0 w-0 h-px ${
-                      darkMode ? "bg-white" : "bg-gray-800"
-                    } transition-all duration-300 group-hover:w-full`}
-                  ></span>
-                </Link>
-              </li>
-            ))}
-            <li>
-              <Link
-                href="https://github.com/R4ffaell"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center justify-center p-1.5 rounded-full ${
-                  darkMode
-                    ? "text-gray-300 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                } transition-colors`}
-                aria-label="GitHub profile"
-              >
-                <Github size={18} />
-              </Link>
-            </li>
-            <li>
-              <button
-                onClick={toggleTheme}
-                className={`inline-flex items-center justify-center p-1.5 rounded-full ${
-                  darkMode
-                    ? "text-gray-300 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                } transition-colors overflow-hidden relative`}
-                aria-label={
-                  darkMode ? "Switch to light mode" : "Switch to dark mode"
-                }
-                disabled={themeChanging}
-              >
-                <span
-                  className={`absolute inset-0 ${
-                    darkMode ? "bg-gray-700" : "bg-gray-300"
-                  } opacity-0 transition-opacity duration-300 ${
-                    themeChanging ? "opacity-20" : ""
-                  }`}
-                ></span>
-                {darkMode ? (
-                  <Sun
-                    size={18}
-                    className={`transition-all duration-300 ${
-                      themeChanging ? "rotate-90" : "rotate-0"
-                    }`}
-                  />
-                ) : (
-                  <Moon
-                    size={18}
-                    className={`transition-all duration-300 ${
-                      themeChanging ? "-rotate-90" : "rotate-0"
-                    }`}
-                  />
-                )}
-              </button>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      {/* Divider */}
-      <div
-        className={`hidden w-screen h-px md:block ${
-          darkMode
-            ? "bg-gradient-to-r from-transparent via-gray-600 to-transparent"
-            : "bg-gradient-to-r from-transparent via-gray-300 to-transparent"
-        } transition-opacity duration-1000 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
-
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center z-10 mt-24">
-        <h1
-          className={`py-3 px-1 text-4xl sm:text-6xl md:text-8xl font-display bg-clip-text text-transparent ${
-            darkMode
-              ? "bg-gradient-to-r from-blue-100 via-white to-blue-100"
-              : "bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900"
-          } whitespace-nowrap cursor-default drop-shadow-md transition-all duration-1000 ${
-            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          Anakta Raffaell
-        </h1>
-
+    <>
+      {/* Hero */}
+      <section className="hero-h hero-glow relative flex flex-col items-center justify-center overflow-hidden px-6 text-center">
         <p
-          className={`mt-4 text-xl ${
-            darkMode ? "text-blue-100" : "text-blue-900"
-          } font-light transition-all duration-1000 delay-200 ${
-            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
+          className="animate-fade-up text-lg font-medium text-accent sm:text-xl"
+          style={{ animationDelay: "0ms" }}
         >
-          AI & Computer Vision Engineer
+          Analyst, AI & Data · Deloitte Indonesia
         </p>
-
-        {/* Technology Tags */}
-        <div
-          className={`mt-6 mb-2 overflow-hidden h-6 transition-all duration-700 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
+        <h1
+          className="animate-fade-up mt-4 bg-gradient-to-b from-fg to-muted bg-clip-text pb-2 text-5xl font-semibold tracking-tighter text-transparent sm:text-7xl md:text-8xl"
+          style={{ animationDelay: "100ms" }}
         >
-          <div className="flex gap-3 items-center animate-marquee">
-            {[...allTechnologies, ...allTechnologies].map((tech, index) => (
-              <span
-                key={index}
-                className={`text-xs px-3 py-1 ${
-                  darkMode
-                    ? "bg-gray-800 text-gray-300 border border-gray-700"
-                    : "bg-white text-gray-800 border border-gray-200"
-                } rounded-full font-mono whitespace-nowrap flex items-center gap-2 shadow-sm`}
-              >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    tech.category === "Frontend"
-                      ? "bg-amber-400"
-                      : tech.category === "Backend"
-                      ? "bg-emerald-400"
-                      : tech.category === "Data"
-                      ? "bg-blue-400"
-                      : tech.category === "AI/ML"
-                      ? "bg-purple-400"
-                      : tech.category === "Deployment"
-                      ? "bg-red-400"
-                      : "bg-gray-400"
-                  }`}
-                ></span>
-                {tech.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div
-          className={`hidden w-screen h-px md:block ${
-            darkMode
-              ? "bg-gradient-to-r from-transparent via-gray-600 to-transparent"
-              : "bg-gradient-to-r from-transparent via-gray-300 to-transparent"
-          } transition-opacity duration-1000 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
-        />
-
-        {/* Bio Section */}
-        <div
-          className={`my-12 text-center max-w-xl px-6 transition-all duration-1000 delay-300 ${
-            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
+          {site.name}.
+        </h1>
+        <p
+          className="animate-fade-up mt-6 max-w-2xl text-xl leading-relaxed text-muted sm:text-2xl"
+          style={{ animationDelay: "220ms" }}
         >
-          <h2
-            className={`text-sm sm:text-base ${
-              darkMode ? "text-gray-300" : "text-gray-700"
-            } leading-relaxed`}
-          >
-            I'm a final-year Computer Engineering student who loves building
-            smart apps with AI & Computer Vision.
-            <br />
-            Check out my{" "}
-            <Link
-              href="https://github.com/R4ffaell"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1 ${
-                darkMode
-                  ? "text-blue-300 hover:text-blue-200"
-                  : "text-blue-600 hover:text-blue-800"
-              } underline decoration-dotted underline-offset-2 transition-colors`}
-            >
-              GitHub <ExternalLink size={14} />
-            </Link>{" "}
-            to see what I'm working on, from helmet to driver monitoring
-            systems.
-          </h2>
-        </div>
-
-        {/* Featured Project Section */}
-        <div className="max-w-4xl w-full px-6 mb-8 transition-all duration-1000 delay-400 opacity-100 translate-y-0">
-          <h3
-            className={`text-xl font-medium mb-4 text-center ${
-              darkMode ? "text-gray-200" : "text-gray-900"
-            }`}
-          >
-            Featured Projects
-          </h3>
-
-          <div className="relative w-full" style={{ minHeight: "300px" }}>
-            {featuredProject
-              .filter((project) => project.published && project.featured)
-              .map((project, idx) => (
-                <div
-                  key={idx}
-                  className={`absolute top-0 left-0 w-full transition-opacity duration-300 ease-linear ${
-                    idx === current
-                      ? "opacity-100 z-10"
-                      : "opacity-0 z-0 pointer-events-none"
-                  }`}
-                >
-                  <div
-                    className={`rounded-lg overflow-hidden ${
-                      darkMode
-                        ? "bg-gray-800/90 border border-gray-700"
-                        : "bg-white/90 border border-gray-200"
-                    } p-4 sm:p-6 flex flex-col sm:flex-row gap-6 backdrop-blur-sm shadow-lg`}
-                  >
-                    <div className="aspect-video w-full sm:w-1/2 overflow-hidden rounded-md bg-gray-900/30 flex items-center justify-center">
-                      <img
-                        src={project.image || "/images/Distracted.jpg"}
-                        alt={`${project.title} Screenshot`}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-
-                    <div className="flex-1 flex flex-col">
-                      <h4
-                        className={`text-lg font-medium ${
-                          darkMode ? "text-white" : "text-gray-900"
-                        } mb-2`}
-                      >
-                        {project.title}
-                      </h4>
-                      <p
-                        className={`text-sm ${
-                          darkMode ? "text-gray-300" : "text-gray-700"
-                        } mb-4`}
-                      >
-                        {project.description}
-                      </p>
-                      <div className="flex items-center gap-2 mt-auto">
-                        {project.repository && (
-                          <>
-                            <Link
-                              href={project.repository}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`inline-flex items-center gap-1 text-xs ${
-                                darkMode
-                                  ? "text-blue-300 hover:text-blue-200"
-                                  : "text-blue-600 hover:text-blue-800"
-                              } transition-colors`}
-                            >
-                              <Github size={14} /> View Code
-                            </Link>
-                            <span
-                              className={`text-xs ${
-                                darkMode ? "text-gray-500" : "text-gray-400"
-                              }`}
-                            >
-                              •
-                            </span>
-                          </>
-                        )}
-                        {project.url && (
-                          <Link
-                            href={project.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-1 text-xs ${
-                              darkMode
-                                ? "text-blue-300 hover:text-blue-200"
-                                : "text-blue-600 hover:text-blue-800"
-                            } transition-colors`}
-                          >
-                            <ExternalLink size={14} /> Live Demo
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-
-        {/* Project & Resume Links */}
+          Building LLM workflows, cloud data pipelines, and computer vision
+          systems that ship.
+        </p>
         <div
-          className={`flex gap-4 mb-16 transition-all duration-1000 delay-500 ${
-            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className="animate-fade-up mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4"
+          style={{ animationDelay: "340ms" }}
         >
           <Link
             href="/projects"
-            className={`group relative flex items-center justify-center rounded-full overflow-hidden ${
-              darkMode
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            } px-6 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 ${
-              darkMode ? "focus:ring-blue-400" : "focus:ring-blue-300"
-            } focus:ring-offset-2`}
+            className="rounded-full bg-brand px-6 py-3 text-base font-medium text-white transition-colors hover:bg-brand/85"
           >
-            <span className="relative z-10">Explore My Projects</span>
-            <span className="absolute inset-0 overflow-hidden rounded-full">
-              <span
-                className={`absolute inset-0 -translate-x-full rounded-full ${
-                  darkMode ? "bg-blue-400/20" : "bg-blue-700/20"
-                } transition-all duration-500 group-hover:translate-x-0 group-hover:scale-150`}
-              />
-            </span>
+            View projects
           </Link>
-
-          <Link
-            href="https://drive.google.com/file/d/1VecATyfKRrptXm3U2oB6sxGQZo3H7v3H/view?usp=sharing"
+          <a
+            href={site.resume}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 rounded-full ${
-              darkMode
-                ? "bg-transparent text-gray-300 hover:text-white border border-gray-700 hover:border-gray-500"
-                : "bg-transparent text-gray-700 hover:text-gray-900 border border-gray-300 hover:border-gray-400"
-            } px-6 py-2.5 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 ${
-              darkMode ? "focus:ring-gray-500/50" : "focus:ring-gray-400/50"
-            } focus:ring-offset-2`}
+            className="inline-flex items-center gap-1 text-base text-accent hover:underline"
           >
-            <FileText size={16} />
-            <span>View Resume</span>
+            Resume
+            <span className="sr-only"> (opens in a new tab)</span>
+            <ChevronRight size={16} aria-hidden="true" />
+          </a>
+        </div>
+      </section>
+
+      {/* Technologies */}
+      <section aria-label="Technologies" className="border-y py-8">
+        <div className="marquee">
+          <ul className="marquee-track">
+            {[0, 1].map((copy) =>
+              technologies.map((tech) => (
+                <li
+                  key={`${copy}-${tech}`}
+                  // The second copy only exists to make the loop seamless.
+                  aria-hidden={copy === 1 ? "true" : undefined}
+                  className="whitespace-nowrap rounded-full bg-fg/5 px-5 py-2 text-sm text-muted ring-1 ring-line/10"
+                >
+                  {tech}
+                </li>
+              )),
+            )}
+          </ul>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="mx-auto max-w-4xl px-6 py-28 text-center sm:py-40">
+        <h2 className="text-3xl font-semibold leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
+          <ScrollText text={ABOUT} />
+        </h2>
+      </section>
+
+      {/* Highlights */}
+      <section aria-label="Highlights" className="mx-auto max-w-5xl px-6 pb-28 sm:pb-40">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {highlights.map((item, i) => (
+            <Reveal key={item.label} delay={i * 80} className="h-full">
+              <div className="h-full rounded-3xl bg-card p-6 text-center">
+                <div className="bg-gradient-to-b from-fg to-muted bg-clip-text text-4xl font-semibold tracking-tight text-transparent sm:text-5xl">
+                  {item.value}
+                </div>
+                <div className="mt-3 text-sm font-medium">{item.label}</div>
+                <div className="mt-1 text-xs text-muted">{item.detail}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Career */}
+      <section className="bg-alt py-28 sm:py-40">
+        <div className="mx-auto max-w-3xl px-6">
+          <Reveal>
+            <h2 className="text-center text-4xl font-semibold tracking-tight sm:text-6xl">
+              Career.
+            </h2>
+          </Reveal>
+          <ol className="mt-16 space-y-4">
+            {jobs.map((job) => (
+              <li key={job.org + job.period}>
+                <Reveal>
+                  <div className="rounded-3xl bg-card-alt p-6 sm:p-8">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <h3 className="text-xl font-semibold tracking-tight">
+                        {job.shortRole}
+                        <span className="font-normal text-muted"> · {job.shortOrg}</span>
+                      </h3>
+                      <span className={`text-sm ${job.current ? "text-ok" : "text-muted"}`}>
+                        {job.period}
+                      </span>
+                    </div>
+                    <p className="mt-3 leading-relaxed text-muted">{job.summary}</p>
+                  </div>
+                </Reveal>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-10 text-center">
+            <Link
+              href="/experience"
+              className="inline-flex items-center gap-1 text-accent hover:underline"
+            >
+              Full experience, education & skills
+              <ChevronRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Selected work */}
+      <section className="mx-auto max-w-5xl px-6 py-28 sm:py-40">
+        <Reveal>
+          <h2 className="text-center text-4xl font-semibold tracking-tight sm:text-6xl">
+            Selected work.
+          </h2>
+        </Reveal>
+        <div className="mt-16 grid gap-5 sm:grid-cols-2">
+          {featured.map((project, i) => (
+            <Reveal key={project.slug} delay={(i % 2) * 100}>
+              <ProjectCard project={project} />
+            </Reveal>
+          ))}
+        </div>
+        <div className="mt-10 text-center">
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-1 text-accent hover:underline"
+          >
+            See all projects
+            <ChevronRight size={16} aria-hidden="true" />
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Scroll Indicator */}
-      {scrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-70">
-          <ChevronDown
-            size={20}
-            className={darkMode ? "text-gray-400" : "text-gray-600"}
-          />
-        </div>
-      )}
-
-      {/* Footer */}
-      <footer
-        className={`w-full py-6 mt-auto ${
-          darkMode ? "text-gray-500" : "text-gray-500"
-        } text-center text-xs`}
-      >
-        <p>
-          © {new Date().getFullYear()} Anakta Raffaell. All rights reserved.
-        </p>
-      </footer>
-
-      <style jsx global>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(100%); /* Mulai dari luar layar (kanan) */
-          }
-          100% {
-            transform: translateX(-100%); /* Keluar dari layar (kiri) */
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 40s linear infinite; /* Durasi animasi 20 detik */
-          will-change: transform;
-        }
-
-        @media (prefers-reduced-motion) {
-          .animate-marquee {
-            animation: none;
-          }
-        }
-
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 2s linear infinite;
-        }
-      `}</style>
-    </div>
+      {/* Closing call to action */}
+      <section className="bg-alt px-6 py-28 text-center sm:py-36">
+        <Reveal>
+          <h2 className="text-4xl font-semibold tracking-tight sm:text-6xl">
+            Let’s build something.
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-xl text-muted">
+            Open to conversations about AI, data, and computer vision.
+          </p>
+          <Link
+            href="/contact"
+            className="mt-10 inline-block rounded-full bg-brand px-6 py-3 text-base font-medium text-white transition-colors hover:bg-brand/85"
+          >
+            Get in touch
+          </Link>
+        </Reveal>
+      </section>
+    </>
   );
 }

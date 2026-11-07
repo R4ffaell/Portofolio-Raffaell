@@ -1,24 +1,39 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+// Colors are CSS variables (see global.css) so one class works in light + dark.
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	content: [
-		"./app/**/*.{js,ts,jsx,tsx}",
-		"./mdx-components.tsx",
-		"content/**/*.mdx",
-	],
-
+	darkMode: "class",
+	// Only apply hover styles on devices that can actually hover (no sticky hover on touch).
+	future: { hoverOnlyWhenSupported: true },
+	content: ["./app/**/*.{js,ts,jsx,tsx}", "./content/**/*.mdx"],
 	theme: {
 		extend: {
+			colors: {
+				canvas: token("canvas"),
+				alt: token("alt"),
+				card: token("card"),
+				"card-alt": token("card-alt"),
+				fg: token("fg"),
+				muted: token("muted"),
+				line: token("line"),
+				accent: token("accent"),
+				brand: token("brand"),
+				ok: token("ok"),
+			},
+			borderColor: {
+				DEFAULT: "rgb(var(--line) / 0.1)",
+			},
+			fontFamily: {
+				sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
+			},
 			typography: {
 				DEFAULT: {
 					css: {
-						"code::before": {
-							content: '""',
-						},
-						"code::after": {
-							content: '""',
-						},
+						"code::before": { content: '""' },
+						"code::after": { content: '""' },
 					},
 				},
 				quoteless: {
@@ -28,79 +43,14 @@ module.exports = {
 					},
 				},
 			},
-			fontFamily: {
-				sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
-				display: ["var(--font-calsans)"],
-			},
-			backgroundImage: {
-				"gradient-radial":
-					"radial-gradient(50% 50% at 50% 50%, var(--tw-gradient-stops))",
+			keyframes: {
+				"fade-up": {
+					from: { opacity: "0", transform: "translateY(24px)" },
+					to: { opacity: "1", transform: "none" },
+				},
 			},
 			animation: {
-				"fade-in": "fade-in 3s ease-in-out forwards",
-				title: "title 3s ease-out forwards",
-				"fade-left": "fade-left 3s ease-in-out forwards",
-				"fade-right": "fade-right 3s ease-in-out forwards",
-			},
-			keyframes: {
-				"fade-in": {
-					"0%": {
-						opacity: "0%",
-					},
-					"75%": {
-						opacity: "0%",
-					},
-					"100%": {
-						opacity: "100%",
-					},
-				},
-				"fade-left": {
-					"0%": {
-						transform: "translateX(100%)",
-						opacity: "0%",
-					},
-
-					"30%": {
-						transform: "translateX(0%)",
-						opacity: "100%",
-					},
-					"100%": {
-						opacity: "0%",
-					},
-				},
-				"fade-right": {
-					"0%": {
-						transform: "translateX(-100%)",
-						opacity: "0%",
-					},
-
-					"30%": {
-						transform: "translateX(0%)",
-						opacity: "100%",
-					},
-					"100%": {
-						opacity: "0%",
-					},
-				},
-				title: {
-					"0%": {
-						"line-height": "0%",
-						"letter-spacing": "0.25em",
-						opacity: "0",
-					},
-					"25%": {
-						"line-height": "0%",
-						opacity: "0%",
-					},
-					"80%": {
-						opacity: "100%",
-					},
-
-					"100%": {
-						"line-height": "100%",
-						opacity: "100%",
-					},
-				},
+				"fade-up": "fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both",
 			},
 		},
 	},

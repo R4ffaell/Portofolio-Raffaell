@@ -1,136 +1,118 @@
-"use client";
-import { Github, Linkedin, Mail, Copy, CheckCircle, ExternalLink } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { Navigation } from "../components/nav";
-import { Card } from "../components/card";
-import { motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Github,
+  Linkedin,
+  Mail,
+  type LucideIcon,
+} from "lucide-react";
+import type { Metadata } from "next";
+import { CopyButton } from "../components/copy-button";
+import { Reveal } from "../components/reveal";
+import { site } from "../lib/site";
 
-const socials = [
-  {
-    icon: <Linkedin size={20} />,
-    href: "https://www.linkedin.com/in/anaktaraffaell",
-    label: "LinkedIn",
-    handle: "Anakta Raffaell",
-    buttonText: "Visit LinkedIn",
-    buttonIcon: <ExternalLink size={16} />
-  },
-  {
-    icon: <Mail size={20} />,
-    href: "mailto:anaktaraffaelltambunan@gmail.com",
-    label: "Email",
-    handle: "anaktaraffaelltambunan@gmail.com",
-    buttonText: "Send Email",
-    buttonIcon: <Mail size={16} />
-  },
-  {
-    icon: <Github size={20} />,
-    href: "https://github.com/R4ffaell",
-    label: "GitHub",
-    handle: "R4ffaell",
-    buttonText: "View GitHub",
-    buttonIcon: <ExternalLink size={16} />
-  },
-];
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Get in touch with Anakta Raffaell Tambunan.",
+};
+
+function SocialCard({
+  icon: Icon,
+  label,
+  handle,
+  href,
+  action,
+}: {
+  icon: LucideIcon;
+  label: string;
+  handle: string;
+  href: string;
+  action: string;
+}) {
+  return (
+    <section
+      aria-label={label}
+      className="flex flex-col rounded-3xl bg-card p-8 sm:p-10"
+    >
+      <div className="flex items-center gap-3 text-muted">
+        <Icon size={20} aria-hidden="true" />
+        <h2 className="text-sm font-medium">{label}</h2>
+      </div>
+      <p className="mt-4 break-words text-2xl font-semibold tracking-tight">{handle}</p>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-8 inline-flex items-center gap-1 self-start text-accent hover:underline"
+      >
+        {action}
+        <ArrowUpRight size={16} aria-hidden="true" />
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    </section>
+  );
+}
 
 export default function ContactPage() {
-  const [copied, setCopied] = useState(false);
-  const [emailHovered, setEmailHovered] = useState(false);
-
-  const handleCopy = (e: React.MouseEvent<HTMLButtonElement>, text: string) => {
-    e.preventDefault();
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className="bg-gradient-to-tl from-zinc-900/0 via-zinc-900 to-zinc-900/0">
-      <Navigation />
-      <div className="container flex items-center justify-center min-h-screen px-4 mx-auto">
-        <div className="grid w-full grid-cols-1 gap-8 mx-auto mt-32 sm:mt-0 sm:grid-cols-3 lg:gap-16">
-          {socials.map((social, i) => {
-            const isEmail = social.label === "Email";
+    <div className="mx-auto max-w-4xl px-6 pb-28 pt-20 sm:pt-28">
+      <header>
+        <h1 className="animate-fade-up text-5xl font-semibold tracking-tighter sm:text-7xl">
+          Get in touch.
+        </h1>
+        <p
+          className="animate-fade-up mt-6 max-w-2xl text-xl leading-relaxed text-muted"
+          style={{ animationDelay: "120ms" }}
+        >
+          Open to conversations about AI, data, and computer vision. Based in{" "}
+          {site.location}.
+        </p>
+      </header>
 
-            return (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.05 }}
-                className="transition-transform"
-                onMouseEnter={() => isEmail && setEmailHovered(true)}
-                onMouseLeave={() => isEmail && setEmailHovered(false)}
+      <div className="mt-14 grid gap-4 sm:grid-cols-2">
+        <Reveal className="sm:col-span-2">
+          <section aria-labelledby="email-heading" className="rounded-3xl bg-card p-8 sm:p-12">
+            <div className="flex items-center gap-3 text-muted">
+              <Mail size={20} aria-hidden="true" />
+              <h2 id="email-heading" className="text-sm font-medium">
+                Email
+              </h2>
+            </div>
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-4 block break-all text-2xl font-semibold tracking-tight transition-colors hover:text-accent sm:text-4xl"
+            >
+              {site.email}
+            </a>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href={`mailto:${site.email}`}
+                className="rounded-full bg-brand px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-brand/85"
               >
-                <Card className="relative bg-white/5 backdrop-blur-md hover:shadow-xl hover:border-zinc-400 border border-zinc-700 group transition duration-300 group-hover:ring-2 group-hover:ring-orange-500/40">
-                  <div className="p-6 flex flex-col items-center justify-center relative">
-                    <span className="relative flex items-center justify-center w-12 h-12 text-sm border rounded-full text-zinc-200 group-hover:text-white group-hover:bg-zinc-900 border-zinc-500 bg-zinc-900 group-hover:border-zinc-200 drop-shadow-orange">
-                      {social.icon}
-                    </span>
+                Send email
+              </a>
+              <CopyButton text={site.email} />
+            </div>
+          </section>
+        </Reveal>
 
-                    <span className="mt-2 text-sm text-zinc-400 group-hover:text-zinc-200">
-                      {social.label}
-                    </span>
-
-                    {isEmail ? (
-                      <div className="text-lg font-medium text-zinc-200 group-hover:text-white font-display mt-4 mb-4 text-center">
-                        {emailHovered ? (
-                          <span className="overflow-x-auto whitespace-nowrap max-w-full block px-2">
-                            {social.handle}
-                          </span>
-                        ) : (
-                          <span className="inline-block text-zinc-200 group-hover:text-white">
-                            anaktaraffaell...
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="mt-4 mb-4 text-lg font-medium text-zinc-200 group-hover:text-white font-display">
-                        {social.handle}
-                      </span>
-                    )}
-
-                    <Link
-                      href={social.href}
-                      target={!isEmail ? "_blank" : "_self"}
-                      className="mt-2 flex items-center justify-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-md text-sm font-medium transition-colors w-full"
-                    >
-                      {social.buttonIcon}
-                      {social.buttonText}
-                    </Link>
-
-                    {isEmail && (
-                      <div className="relative">
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={copied || emailHovered ? { opacity: 1, y: 0 } : { opacity: 0, y: 5 }}
-                          transition={{ duration: 0.3 }}
-                          className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs bg-zinc-800 text-white px-2 py-1 rounded-md shadow-lg"
-                        >
-                          {copied ? "Copied!" : "Click to copy!"}
-                        </motion.div>
-                        <button
-                          onClick={(e) => handleCopy(e, social.handle)}
-                          className="mt-2 flex items-center justify-center gap-2 px-4 py-2 bg-zinc-700/50 hover:bg-zinc-700 text-white rounded-md text-sm transition-colors w-full"
-                        >
-                          {copied ? (
-                            <>
-                              <CheckCircle size={16} className="text-green-400" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={16} />
-                              <span>Copy Email</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
+        <Reveal className="h-full" delay={80}>
+          <SocialCard
+            icon={Linkedin}
+            label="LinkedIn"
+            handle="Anakta Raffaell"
+            href={site.linkedin}
+            action="Visit LinkedIn"
+          />
+        </Reveal>
+        <Reveal className="h-full" delay={160}>
+          <SocialCard
+            icon={Github}
+            label="GitHub"
+            handle="R4ffaell"
+            href={site.github}
+            action="View GitHub"
+          />
+        </Reveal>
       </div>
     </div>
   );

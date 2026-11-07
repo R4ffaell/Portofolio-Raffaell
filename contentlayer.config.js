@@ -24,7 +24,7 @@ export const Project = defineDocumentType(() => ({
 		published: {
 			type: "boolean",
 		},
-		featured: {  // Add this field
+		featured: {
 			type: "boolean",
 			default: false,
 		},
@@ -45,23 +45,8 @@ export const Project = defineDocumentType(() => ({
 		repository: {
 			type: "string",
 		},
-		image: {  // Add this field
-			type: "string",
-		},
-	},
-	computedFields,
-}));
-
-export const Page = defineDocumentType(() => ({
-	name: "Page",
-	filePathPattern: "pages/**/*.mdx",
-	contentType: "mdx",
-	fields: {
-		title: {
-			type: "string",
-			required: true,
-		},
-		description: {
+		// Thumbnail: a "/images/..." path in /public, or an absolute image URL.
+		image: {
 			type: "string",
 		},
 	},
@@ -70,7 +55,7 @@ export const Page = defineDocumentType(() => ({
 
 export default makeSource({
 	contentDirPath: "./content",
-	documentTypes: [Page, Project],
+	documentTypes: [Project],
 	mdx: {
 		remarkPlugins: [remarkGfm],
 		rehypePlugins: [

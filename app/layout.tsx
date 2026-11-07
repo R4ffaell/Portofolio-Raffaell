@@ -1,28 +1,24 @@
-// app/layout.tsx (atau app/layout.ts jika kamu pakai TypeScript)
 import "../global.css";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import LocalFont from "next/font/local";
-import { Metadata } from "next";
 import { Analytics } from "./components/analytics";
+import { SiteFooter } from "./components/site-footer";
+import { SiteNav } from "./components/site-nav";
+import { site } from "./lib/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
-    default: "Raffael’s Portfolio",
-    template: "%s | Raffael’s Portfolio",
+    default: site.title,
+    template: `%s | ${site.title}`,
   },
-  description: "Computer Engineering student and software developer passionate about building useful, data-driven tools for the web.",
+  description: site.description,
   openGraph: {
-    title: "Raffael’s Portfolio",
-    description: "Computer Engineering student and software developer passionate about building useful, data-driven tools for the web.",
-    url: "https://raffael.dev", // Ganti dengan domain kamu
-    siteName: "Raffael’s Portfolio",
-    images: [
-      {
-        url: "https://raffael.dev/og.png", // Ganti dengan og image kamu
-        width: 1920,
-        height: 1080,
-      },
-    ],
+    title: site.title,
+    description: site.description,
+    url: site.url,
+    siteName: site.title,
+    images: [{ url: "/og.png", width: 1920, height: 1080 }],
     locale: "en-US",
     type: "website",
   },
@@ -38,24 +34,31 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: "Raffael’s Portfolio",
     card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+    images: ["/og.png"],
   },
   icons: {
+    icon: "/favicon.png",
     shortcut: "/favicon.png",
   },
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
-// Fonts
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
-const calSans = LocalFont({
-  src: "../public/fonts/CalSans-SemiBold.ttf",
-  variable: "--font-calsans",
-});
+// Runs before first paint so there is no light/dark flash. Saved choice wins,
+// otherwise the OS preference (dark if it can't be read). The "js" class lets
+// CSS hide scroll-reveal content only when JavaScript is available.
+const themeScript = `(function(){var h=document.documentElement;h.classList.add("js");try{var s=localStorage.getItem("theme");var d=s?s==="dark":!window.matchMedia("(prefers-color-scheme: light)").matches;h.classList.toggle("dark",d)}catch(e){h.classList.add("dark")}})()`;
 
 export default function RootLayout({
   children,
@@ -63,16 +66,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${calSans.variable}`}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
+        {/* rome-ignore lint/security/noDangerouslySetInnerHtml: constant theme-init script, no user input */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Analytics />
       </head>
       <body
-        className={`bg-black ${
+        className={`flex min-h-screen flex-col bg-canvas font-sans text-fg antialiased ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        {children}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+        >
+          Skip to content
+        </a>
+        <SiteNav />
+        <main id="main" className="flex-1 pt-12">
+          {children}
+        </main>
+        <SiteFooter />
       </body>
     </html>
   );

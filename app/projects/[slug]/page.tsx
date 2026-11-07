@@ -1,48 +1,45 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allProjects } from "contentlayer/generated";
-import { Mdx } from "@/app/components/mdx";
+import { Mdx } from "../../components/mdx";
+import { getProject, getPublishedProjects } from "../../lib/projects";
+import { getViewCount } from "../../lib/views";
 import { Header } from "./header";
 import "./mdx.css";
 import { ReportView } from "./view";
-import { Redis } from "@upstash/redis";
 
 export const revalidate = 60;
+// Only published slugs exist; anything else is a 404 (drafts never render).
+export const dynamicParams = false;
 
 type Props = {
-  params: {
-    slug: string;
-  };
+  params: { slug: string };
 };
 
-const redis = Redis.fromEnv();
-
-export async function generateStaticParams(): Promise<Props["params"][]> {
-  return allProjects
-    .filter((p) => p.published)
-    .map((p) => ({
-      slug: p.slug,
-    }));
+export function generateStaticParams(): Props["params"][] {
+  return getPublishedProjects().map((project) => ({ slug: project.slug }));
 }
 
-export default async function PostPage({ params }: Props) {
-  const slug = params?.slug;
-  const project = allProjects.find((project) => project.slug === slug);
+export function generateMetadata({ params }: Props): Metadata {
+  const project = getProject(params.slug);
+  if (!project) return {};
+  return { title: project.title, description: project.description };
+}
 
-  if (!project) {
-    notFound();
-  }
+export default async function ProjectPage({ params }: Props) {
+  const project = getProject(params.slug);
+  if (!project) notFound();
 
-  const views =
-    (await redis.get<number>(["pageviews", "projects", slug].join(":"))) ?? 0;
+  const views = await getViewCount(project.slug);
 
   return (
-    <div className="bg-zinc-50 min-h-screen">
+    <>
       <Header project={project} views={views} />
       <ReportView slug={project.slug} />
-
-      <article className="px-4 py-12 mx-auto prose prose-zinc prose-quoteless">
-        <Mdx code={project.body.code} />
-      </article>
-    </div>
+      <div className="mx-auto max-w-3xl px-6 py-14 sm:py-20">
+        <article className="prose prose-quoteless max-w-none">
+          <Mdx code={project.body.code} />
+        </article>
+      </div>
+    </>
   );
 }

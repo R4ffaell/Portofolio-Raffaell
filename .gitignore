@@ -37,3 +37,5 @@ yarn-error.log*
 next-env.d.ts
 
 .contentlayer
+# alternate Next build output (NEXT_DIST_DIR)
+/.next-*/

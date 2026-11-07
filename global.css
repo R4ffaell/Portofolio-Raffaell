@@ -2,9 +2,190 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  .text-edge-outline {
-    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-  }
-} 
+/* ------------------------------------------------------------------ *
+ * Design tokens: RGB triplets so Tailwind opacity modifiers work
+ * (e.g. bg-fg/5). `.dark` is toggled on <html> by the theme script.
+ * ------------------------------------------------------------------ */
+:root {
+  --canvas: 255 255 255;
+  --alt: 245 245 247;
+  --card: 245 245 247;
+  --card-alt: 255 255 255;
+  --fg: 29 29 31;
+  --muted: 110 110 115;
+  --line: 0 0 0;
+  --accent: 0 102 204;
+  --brand: 0 113 227;
+  --ok: 4 120 87;
+  color-scheme: light;
+}
 
+.dark {
+  --canvas: 0 0 0;
+  --alt: 14 14 15;
+  --card: 29 29 31;
+  --card-alt: 29 29 31;
+  --fg: 245 245 247;
+  --muted: 152 152 157;
+  --line: 255 255 255;
+  --accent: 41 151 255;
+  --brand: 0 113 227;
+  --ok: 52 211 153;
+  color-scheme: dark;
+}
+
+/* ------------------------------ Base ------------------------------ */
+html {
+  background-color: rgb(var(--canvas));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* keep anchored headings clear of the fixed nav */
+  scroll-padding-top: 4rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+::selection {
+  background-color: rgb(var(--brand) / 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 3px;
+}
+
+/* --------------------------- Frosted nav --------------------------- */
+.glass {
+  background-color: rgb(var(--canvas) / 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* No backdrop-filter support: fall back to a near-opaque bar so text stays readable. */
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .glass {
+    background-color: rgb(var(--canvas) / 0.96);
+  }
+}
+
+/* ------------------------------ Hero ------------------------------- */
+.hero-glow {
+  background-image: radial-gradient(
+    60% 50% at 50% 28%,
+    rgb(var(--brand) / 0.2),
+    transparent 70%
+  );
+}
+
+/* viewport height minus the 3rem nav; svh avoids the mobile address-bar jump */
+.hero-h {
+  min-height: calc(100vh - 3rem);
+  min-height: calc(100svh - 3rem);
+}
+
+/* ----------------------------- Marquee ------------------------------ *
+ * The track holds the list twice and slides by exactly half, so the loop
+ * is seamless. Padding-right equals the gap to keep the two halves equal.
+ * Deliberately NOT switched off for prefers-reduced-motion: it is slow,
+ * non-essential, and Windows "Show animations: off" would freeze it.
+ * It pauses on hover and keyboard focus.
+ * ------------------------------------------------------------------- */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 0.75rem;
+  width: max-content;
+  padding-right: 0.75rem;
+  animation: marquee 60s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ------------------------- Scroll reveal --------------------------- *
+ * Content is only hidden when JS is present (".js" is set before paint),
+ * so no-JS visitors and crawlers always see everything.
+ * ------------------------------------------------------------------- */
+.reveal {
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.js .reveal:not([data-shown="true"]) {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+  }
+  .js .reveal:not([data-shown="true"]) {
+    opacity: 1;
+    transform: none;
+  }
+  .animate-fade-up {
+    animation: none;
+  }
+}
+
+/* ---------------------- Scroll-lit statement text ------------------- */
+/* 0.55 floor: dimmed words still meet WCAG large-text contrast (3:1) in both themes. */
+.scroll-word {
+  opacity: calc(0.55 + 0.45 * var(--p, 1));
+  transition:
+    opacity 0.3s ease,
+    color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .scroll-word:hover {
+    opacity: 1;
+    color: rgb(var(--accent));
+  }
+}
+
+/* --------------------- Article (MDX) typography ---------------------- *
+ * Wire @tailwindcss/typography to the same tokens so a single `prose`
+ * class is correct in both themes.
+ * ------------------------------------------------------------------- */
+.prose {
+  --tw-prose-body: rgb(var(--fg) / 0.85);
+  --tw-prose-headings: rgb(var(--fg));
+  --tw-prose-lead: rgb(var(--muted));
+  --tw-prose-links: rgb(var(--accent));
+  --tw-prose-bold: rgb(var(--fg));
+  --tw-prose-counters: rgb(var(--muted));
+  --tw-prose-bullets: rgb(var(--muted));
+  --tw-prose-hr: rgb(var(--line) / 0.15);
+  --tw-prose-quotes: rgb(var(--fg));
+  --tw-prose-quote-borders: rgb(var(--line) / 0.2);
+  --tw-prose-captions: rgb(var(--muted));
+  --tw-prose-code: rgb(var(--fg));
+  --tw-prose-pre-code: #e1e4e8;
+  --tw-prose-pre-bg: #0d1117;
+  --tw-prose-th-borders: rgb(var(--line) / 0.2);
+  --tw-prose-td-borders: rgb(var(--line) / 0.1);
+}

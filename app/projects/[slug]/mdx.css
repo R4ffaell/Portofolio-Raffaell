@@ -1,5 +1,5 @@
 [data-rehype-pretty-code-fragment] code {
-    @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-sm text-black;
+    @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-sm text-zinc-200;
     counter-reset: line;
     box-decoration-break: clone;
   }
@@ -29,4 +29,8 @@
   }
   [data-rehype-pretty-code-title] + pre {
     @apply mt-0;
+  }
+  /* github-dark's comment grey (#6A737D) is only ~3.9:1 on the code background; lighten it to pass WCAG AA. */
+  [data-rehype-pretty-code-fragment] span[style*="#6A737D" i] {
+    color: #8b949e !important;
   }

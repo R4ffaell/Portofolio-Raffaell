@@ -1,192 +1,100 @@
+import { ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import React, { Suspense } from "react";
-import { allProjects } from "contentlayer/generated";
-import { Navigation } from "../components/nav";
-import { Card } from "../components/card";
-import { Article } from "./article";
-import { Redis } from "@upstash/redis";
-import { Eye } from "lucide-react";
+import {
+  ProjectCard,
+  ProjectMeta,
+  ProjectThumb,
+} from "../components/project-card";
+import { Reveal } from "../components/reveal";
+import { PINNED_SLUG, getPublishedProjects } from "../lib/projects";
+import { getViews } from "../lib/views";
 
-// Redis client initialization
-const redis = Redis.fromEnv();
-
-// Project categories configuration
-const PROJECTS_CONFIG = {
-  featured: "Driver-Monitoring",
-  secondary: ["Healthylicious", "IT-Jobs"],
-  revalidationTime: 60 // seconds
+export const metadata: Metadata = {
+  title: "Projects",
+  description:
+    "Computer vision, machine learning and data projects by Anakta Raffaell.",
 };
 
-// Type definitions for better type safety
-type Project = (typeof allProjects)[0];
-type ViewsMap = Record<string, number>;
-
-// Helper functions
-const formatDate = (dateString?: string) => {
-  if (!dateString) return null;
-  const date = new Date(dateString);
-  return {
-    formatted: Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date),
-    iso: date.toISOString()
-  };
-};
-
-const formatViewCount = (count: number) => {
-  return Intl.NumberFormat("en-US", { notation: "compact" }).format(count);
-};
-
-// Fetch view counts for projects
-async function getProjectViews(): Promise<ViewsMap> {
-  try {
-    const viewKeys = allProjects.map((p) => ["pageviews", "projects", p.slug].join(":"));
-    const viewCounts = await redis.mget<number[]>(...viewKeys);
-    
-    return allProjects.reduce<ViewsMap>((acc, project, index) => {
-      acc[project.slug] = viewCounts[index] ?? 0;
-      return acc;
-    }, {});
-  } catch (error) {
-    console.error("Failed to fetch project views:", error);
-    return allProjects.reduce<ViewsMap>((acc, project) => {
-      acc[project.slug] = 0;
-      return acc;
-    }, {});
-  }
-}
-
-// Project grid component to reduce redundancy
-function ProjectGrid({ projects, views }: { projects: Project[], views: ViewsMap }) {
-  return (
-    <div className="grid grid-cols-1 gap-4">
-      {projects.map((project) => (
-        <Card key={project.slug}>
-          <Article project={project} views={views[project.slug] ?? 0} />
-        </Card>
-      ))}
-    </div>
-  );
-}
-
-// Featured project component
-function FeaturedProject({ project, views }: { project: Project, views: number }) {
-  const dateInfo = formatDate(project.date);
-  
-  return (
-    <Card>
-      <Link href={`/projects/${project.slug}`} className="group">
-        <article className="relative w-full h-full p-4 md:p-8">
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-xs text-zinc-100">
-              {dateInfo ? (
-                <time dateTime={dateInfo.iso}>{dateInfo.formatted}</time>
-              ) : (
-                <span>COMING SOON</span>
-              )}
-            </div>
-            <span className="flex items-center gap-1 text-xs text-zinc-500" title={`${views} views`}>
-              <Eye className="w-4 h-4" aria-hidden="true" />
-              <span>{formatViewCount(views)}</span>
-            </span>
-          </div>
-
-          <h3 className="mt-4 text-3xl font-bold text-zinc-100 group-hover:text-white sm:text-4xl font-display">
-            {project.title}
-          </h3>
-          <p className="mt-4 leading-8 duration-150 text-zinc-400 group-hover:text-zinc-300">
-            {project.description}
-          </p>
-          <div className="absolute bottom-4 md:bottom-8">
-            <p className="hidden text-zinc-200 group-hover:text-zinc-50 lg:block">
-              Read more <span aria-hidden="true">&rarr;</span>
-            </p>
-          </div>
-        </article>
-      </Link>
-    </Card>
-  );
-}
-
-// Divider component
-function Divider({ className = "" }: { className?: string }) {
-  return <div className={`w-full h-px bg-zinc-800 ${className}`} aria-hidden="true" />;
-}
-
-export const revalidate = PROJECTS_CONFIG.revalidationTime;
+// Re-render at most once a minute so view counts stay fresh.
+export const revalidate = 60;
 
 export default async function ProjectsPage() {
-  // Get view data for all projects
-  const views = await getProjectViews();
-  
-  // Find and categorize projects
-  const featuredProject = allProjects.find(p => p.slug === PROJECTS_CONFIG.featured);
-  const secondaryProjects = PROJECTS_CONFIG.secondary
-    .map(slug => allProjects.find(p => p.slug === slug))
-    .filter(Boolean) as Project[];
-  
-  // Get remaining published projects, filtered and sorted by date
-  const excludedSlugs = [PROJECTS_CONFIG.featured, ...PROJECTS_CONFIG.secondary];
-  const otherProjects = allProjects
-    .filter(p => p.published && !excludedSlugs.includes(p.slug))
-    .sort((a, b) => {
-      const dateA = a.date ? new Date(a.date).getTime() : Number.POSITIVE_INFINITY;
-      const dateB = b.date ? new Date(b.date).getTime() : Number.POSITIVE_INFINITY;
-      return dateB - dateA;
-    });
+  const projects = getPublishedProjects();
+  const views = await getViews(projects.map((p) => p.slug));
 
-  // Split remaining projects into 3 columns
-  const projectColumns = Array.from({ length: 3 }, (_, columnIndex) => 
-    otherProjects.filter((_, i) => i % 3 === columnIndex)
-  );
+  const hero =
+    projects.find((p) => p.slug === PINNED_SLUG) ??
+    projects.find((p) => p.featured) ??
+    projects[0];
+  // Featured first; the sort is stable, so each group stays newest-first.
+  const rest = projects
+    .filter((p) => p !== hero)
+    .sort((a, b) => Number(b.featured) - Number(a.featured));
 
   return (
-    <div className="relative pb-16">
-      <Navigation />
-      <main className="px-6 pt-20 mx-auto space-y-8 max-w-7xl lg:px-8 md:space-y-16 md:pt-24 lg:pt-32">
-        <header className="max-w-2xl mx-auto lg:mx-0">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
-            Projects
-          </h1>
-          <p className="mt-4 text-zinc-400">
-            Some of the projects are from work and some are on my own time.
-          </p>
-        </header>
-        
-        <Divider />
+    <div className="mx-auto max-w-6xl px-6 pb-28 pt-20 sm:pt-28">
+      <header>
+        <h1 className="animate-fade-up text-5xl font-semibold tracking-tighter sm:text-7xl">
+          Projects.
+        </h1>
+        <p
+          className="animate-fade-up mt-6 max-w-2xl text-xl leading-relaxed text-muted"
+          style={{ animationDelay: "120ms" }}
+        >
+          Some of the projects are from work and some are on my own time.
+        </p>
+      </header>
 
-        {/* Featured Projects Section */}
-        <section aria-labelledby="featured-projects" className="animate-fadeIn">
-          <h2 id="featured-projects" className="sr-only">Featured Projects</h2>
-          <div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2">
-            {/* Main Featured Project */}
-            {featuredProject && (
-              <FeaturedProject project={featuredProject} views={views[featuredProject.slug] ?? 0} />
-            )}
-
-            {/* Secondary Featured Projects */}
-            <div className="flex flex-col w-full gap-8 mx-auto border-t border-gray-900/10 lg:mx-0 lg:border-t-0">
-              {secondaryProjects.map(project => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
+      {hero && (
+        <Reveal className="mt-14">
+          <Link
+            href={`/projects/${hero.slug}`}
+            className="group grid overflow-hidden rounded-3xl bg-card transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 lg:grid-cols-2"
+          >
+            <ProjectThumb
+              project={hero}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="lg:aspect-auto lg:min-h-[22rem]"
+            />
+            <div className="flex flex-col justify-center p-8 sm:p-12">
+              <ProjectMeta project={hero} views={views ? (views[hero.slug] ?? 0) : null} />
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+                {hero.title}
+              </h2>
+              <p className="mt-4 line-clamp-4 leading-relaxed text-muted">
+                {hero.description}
+              </p>
+              <span className="mt-6 inline-flex items-center gap-1 text-accent">
+                Read more
+                <ChevronRight
+                  size={16}
+                  aria-hidden="true"
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </span>
             </div>
-          </div>
-        </section>
-        
-        <Divider className="hidden md:block" />
+          </Link>
+        </Reveal>
+      )}
 
-        {/* All Other Projects Section */}
-        <section aria-labelledby="all-projects">
-          <h2 id="all-projects" className="sr-only">All Projects</h2>
-          <div className="grid grid-cols-1 gap-4 mx-auto lg:mx-0 md:grid-cols-3">
-            {projectColumns.map((columnProjects, index) => (
-              <Suspense key={`column-${index}`} fallback={<div className="h-32 rounded animate-pulse bg-zinc-800/20" />}>
-                <ProjectGrid projects={columnProjects} views={views} />
-              </Suspense>
-            ))}
-          </div>
-        </section>
-      </main>
+      <section aria-labelledby="all-projects" className="mt-20">
+        <h2 id="all-projects" className="text-2xl font-semibold tracking-tight">
+          All projects
+        </h2>
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {rest.map((project, i) => (
+            <li key={project.slug}>
+              <Reveal className="h-full" delay={(i % 3) * 80}>
+                <ProjectCard
+                  project={project}
+                  views={views ? (views[project.slug] ?? 0) : null}
+                />
+              </Reveal>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

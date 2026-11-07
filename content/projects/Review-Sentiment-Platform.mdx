@@ -1,0 +1,49 @@
+---
+title: Traveloka & Agoda Review Sentiment Platform
+description: A full-stack sentiment analysis app that classifies Indonesian-language Traveloka and Agoda reviews with SVM and Gaussian Naive Bayes, served through a Flask API with login, CSV upload, and a results dashboard.
+date: "2025-09-01"
+published: false # DRAFT: flip to true after the TODOs below
+featured: true
+repository: R4ffaell/Traveloka-Agoda-SA
+# TODO before publishing:
+#  1. Add real evaluation numbers (accuracy / macro-F1 per model, test-set size, class balance)
+#     in a "Results" section. Right now the page has none, and that is its biggest gap.
+#  2. Add a dashboard screenshot to /public/images and set `image:` above.
+#  3. Fix the GitHub repo first: its README is a "testing" placeholder, and it only holds
+#     app.py, models/ and templates/. Add a real README plus the scraper and training notebook,
+#     otherwise nothing there backs up the data claims below.
+#  4. Optional: host a demo (e.g. Hugging Face Spaces) and set `url:`.
+---
+
+A full-stack sentiment analysis platform for Indonesian-language customer reviews of **Traveloka** and **Agoda**. It covers the whole path from raw reviews to a working web app: data collection, cleaning and labeling, text preprocessing, two machine-learning models, and a Flask service with a login-protected dashboard.
+
+## What it does
+
+- Classifies **5,000+ collected reviews** with two models side by side: a **Support Vector Machine (SVM)** and **Gaussian Naive Bayes**.
+- Returns a sentiment label (Negatif / Netral / Positif) with a confidence score from each model, plus a preview of the cleaned text the models actually saw.
+- Takes a single review typed into the app, or a **CSV file** of reviews, and shows the results in a dashboard.
+
+## How it works
+
+1. **Collect.** Custom scraping pipelines gather the reviews, then clean and label them into a training set.
+2. **Preprocess.** Indonesian-specific cleaning: lowercase, strip URLs, @mentions, hashtags, punctuation and numbers, then **Sastrawi** stopword removal and stemming. Class balancing keeps training robust and less biased toward the majority class.
+3. **Vectorize.** **TF-IDF** turns each cleaned review into a feature vector.
+4. **Classify.** Both models score every review. Gaussian Naive Bayes needs a dense matrix, so the sparse TF-IDF vectors are converted for that model only.
+5. **Serve.** A Flask REST API exposes the models; the trained models and vectorizer are loaded once at startup instead of on every request.
+
+## Architecture
+
+Scraping, preprocessing, inference, and the UI are separate layers, so a new model can be added without touching the rest.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /predict` | Classify a single review |
+| `POST /upload` | Classify a CSV file of reviews |
+| `GET /health` | Health check |
+| `GET /dashboard` | Results view (login required) |
+
+The interface is a responsive HTML and Bootstrap frontend with session-based login, file upload, and result history kept in the browser with `localStorage`.
+
+## Stack
+
+Python, Flask, TF-IDF, SVM, Gaussian Naive Bayes, Sastrawi (Indonesian NLP), HTML and Bootstrap.
